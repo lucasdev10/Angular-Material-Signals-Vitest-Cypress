@@ -59,7 +59,7 @@
     "angular-eslint": "21.2.0",
     "eslint": "^9.39.2",
     "husky": "^9.1.7",
-    "jsdom": "^27.1.0",
+    "jsdom": "^28.1.0",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
