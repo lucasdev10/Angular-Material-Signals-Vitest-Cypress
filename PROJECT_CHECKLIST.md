@@ -49,10 +49,10 @@
 
 ## Regras de Negócio (Funções Puras)
 
-- [ ] `addItemToCart`
-- [ ] `removeItemFromCart`
-- [ ] `updateItemQuantity`
-- [ ] `calculateCartTotal`
+- [x] `addItemToCart`
+- [x] `removeItemFromCart`
+- [x] `updateItemQuantity`
+- [x] `calculateCartTotal`
 
 ## Testes de Domínio
 
@@ -68,11 +68,11 @@
 
 ## Serviço de Produtos
 
-- [ ] `getProducts`
-- [ ] `getProductById`
-- [ ] `createProduct`
-- [ ] `updateProduct`
-- [ ] `deleteProduct`
+- [x] `getProducts`
+- [x] `getProductById`
+- [x] `createProduct`
+- [x] `updateProduct`
+- [x] `deleteProduct`
 
 ## Testes do Serviço
 
