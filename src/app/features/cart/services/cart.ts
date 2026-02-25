@@ -64,8 +64,4 @@ export class CartService implements ICartService {
       return { ...cart, total };
     });
   }
-
-  calculateCartTotal(): ICart | null {
-    return this.cartData();
-  }
 }

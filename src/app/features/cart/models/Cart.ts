@@ -4,7 +4,6 @@ export interface ICartService {
   addItemToCart(product: IProduct): void;
   removeItemFromCart(productId: string): void;
   updateItemQuantity(productId: string, quantity: number): void;
-  calculateCartTotal(): ICart | null;
 }
 
 export interface ICart {
