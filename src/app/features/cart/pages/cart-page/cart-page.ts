@@ -26,4 +26,13 @@ import { CartService } from '@app/features/cart/services/cart';
 })
 export class CartPage {
   cartService = inject(CartService);
+
+  deleteProduct(productId: string) {
+    this.cartService.removeItemFromCart(productId);
+  }
+
+  updateItemQuantity(event: Event, productId: string) {
+    const target = event.target as HTMLInputElement;
+    this.cartService.updateItemQuantity(productId, Number(target.value));
+  }
 }

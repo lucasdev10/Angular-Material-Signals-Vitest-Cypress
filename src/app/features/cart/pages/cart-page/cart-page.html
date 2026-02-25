@@ -21,7 +21,13 @@
               <div class="item-quantity">
                 <mat-form-field appearance="outline" class="quantity-field">
                   <mat-label>Qtd</mat-label>
-                  <input matInput type="number" [value]="item.quantity" min="1" />
+                  <input
+                    matInput
+                    type="number"
+                    [value]="item.quantity"
+                    min="1"
+                    (change)="updateItemQuantity($event, item.product.id || '')"
+                  />
                 </mat-form-field>
               </div>
 
@@ -31,7 +37,12 @@
               </div>
 
               <div class="item-actions">
-                <button mat-icon-button color="warn" aria-label="Remove item">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  aria-label="Remove item"
+                  (click)="deleteProduct(item.product.id || '')"
+                >
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>
