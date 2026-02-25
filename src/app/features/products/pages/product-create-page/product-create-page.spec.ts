@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProductCreatePage } from './product-create-page';
+import { ProductCreatePageComponent } from './product-create-page';
 
-describe('ProductCreatePage', () => {
-  let component: ProductCreatePage;
-  let fixture: ComponentFixture<ProductCreatePage>;
+describe('ProductCreatePageComponent', () => {
+  let component: ProductCreatePageComponent;
+  let fixture: ComponentFixture<ProductCreatePageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProductCreatePage],
+      imports: [ProductCreatePageComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ProductCreatePage);
+    fixture = TestBed.createComponent(ProductCreatePageComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
