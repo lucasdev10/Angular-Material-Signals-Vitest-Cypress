@@ -14,7 +14,7 @@ export class ProductService implements IProductService {
 
     this.httpService.get('api/products').subscribe({
       next: (res) => {
-        products.set(res);
+        products.set(res.data);
       },
       error: (err) => console.error(err),
     });

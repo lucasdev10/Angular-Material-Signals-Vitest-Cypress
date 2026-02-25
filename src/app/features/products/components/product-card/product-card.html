@@ -1,14 +1,18 @@
 <mat-card class="product-card" appearance="outlined">
   <mat-card-header>
     <mat-card-title-group>
-      <mat-card-title>Shiba Inu</mat-card-title>
-      <mat-card-subtitle>Small</mat-card-subtitle>
+      <mat-card-title>{{ product.name }}</mat-card-title>
+      <mat-card-subtitle>{{ product.price | currency }}</mat-card-subtitle>
       <mat-icon>coffee</mat-icon>
     </mat-card-title-group>
   </mat-card-header>
   <mat-card-content>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae delectus voluptas sed, quae
-    sit eius eum assumenda soluta iusto ullam ipsam esse! Laboriosam ullam animi non, facere sed
-    voluptatem officia.
+    {{ product.description }}
   </mat-card-content>
+
+  <div class="btn-add-to-cart">
+    <button matIconButton aria-label="Btn add item to cart" (click)="addProductToCart()">
+      <mat-icon>add_shopping_cart</mat-icon>
+    </button>
+  </div>
 </mat-card>

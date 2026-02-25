@@ -1,5 +1,7 @@
+import { IProduct } from '@app/features/products/models/Product';
+
 export interface ICartService {
-  addItemToCart(productId: number, quantity: number): Promise<void>;
+  addItemToCart(product: IProduct): void;
   removeItemFromCart(productId: number): Promise<void>;
   updateItemQuantity(productId: number, quantity: number): Promise<void>;
   calculateCartTotal(): Promise<ICart>;

@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
 import { ICart, ICartService } from '@app/features/cart/models/Cart';
+import { IProduct } from '@app/features/products/models/Product';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService implements ICartService {
-  addItemToCart(productId: number, quantity: number): Promise<void> {
-    throw new Error('Method not implemented.');
+  products: WritableSignal<IProduct[]> = signal([]);
+
+  addItemToCart(product: IProduct): void {
+    this.products.update((products) => [...products, product]);
   }
 
   removeItemFromCart(productId: number): Promise<void> {

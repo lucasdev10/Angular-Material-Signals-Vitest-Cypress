@@ -1,4 +1,7 @@
 <section class="product-list">
-  <app-product-card></app-product-card>
-  <app-product-card></app-product-card>
+  @for (item of products(); track item) {
+    <app-product-card [product]="item" (addToCart)="addProductToCart($event)"></app-product-card>
+  } @empty {
+    <p>No records found</p>
+  }
 </section>
