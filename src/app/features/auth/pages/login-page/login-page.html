@@ -16,14 +16,12 @@
         </div>
       }
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <form>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" placeholder="seu@email.com" />
+          <input matInput type="email" [formField]="loginForm.email" placeholder="seu@email.com" />
           <mat-icon matPrefix>email</mat-icon>
-          @if (getErrorMessage('email')) {
-            <mat-error>{{ getErrorMessage('email') }}</mat-error>
-          }
+          <app-form-error [control]="loginForm.email"></app-form-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -31,7 +29,7 @@
           <input
             matInput
             [type]="hidePassword() ? 'password' : 'text'"
-            formControlName="password"
+            [formField]="loginForm.password"
             placeholder="Sua senha"
           />
           <mat-icon matPrefix>lock</mat-icon>
@@ -44,17 +42,16 @@
           >
             <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
-          @if (getErrorMessage('password')) {
-            <mat-error>{{ getErrorMessage('password') }}</mat-error>
-          }
+          <app-form-error [control]="loginForm.password"></app-form-error>
         </mat-form-field>
 
         <button
           mat-raised-button
           color="primary"
-          type="submit"
+          type="button"
           class="full-width submit-button"
           [disabled]="!canSubmit()"
+          (click)="onSubmit()"
         >
           @if (isLoading()) {
             <mat-spinner diameter="20"></mat-spinner>

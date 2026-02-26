@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { email, form, FormField, minLength, required } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormError } from '@app/shared';
 import { AuthStore } from '../../store/auth.store';
 
 @Component({
@@ -18,6 +20,8 @@ import { AuthStore } from '../../store/auth.store';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    FormError,
+    FormField,
   ],
   templateUrl: './login-page.html',
   styleUrl: './login-page.scss',
@@ -31,41 +35,32 @@ export class LoginPageComponent {
   readonly error = this.authStore.error;
   readonly hidePassword = signal(true);
 
-  readonly loginForm = new FormGroup({
-    email: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.email],
+  readonly loginForm = form(
+    signal({
+      email: '',
+      password: '',
     }),
-    password: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.minLength(6)],
-    }),
-  });
+    (fieldPath) => {
+      required(fieldPath.email, { message: 'Campo obrigatório' });
+      email(fieldPath.email, { message: 'Email inválido' });
+      required(fieldPath.password, { message: 'Campo obrigatório' });
+      minLength(fieldPath.password, 6, { message: 'Mínimo de 6 caracteres' });
+    },
+  );
 
-  readonly canSubmit = computed(() => this.loginForm.valid && !this.isLoading());
+  readonly canSubmit = computed(() => this.loginForm().valid() && !this.isLoading());
 
   onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
+    if (this.loginForm().invalid()) {
+      this.loginForm().markAsTouched();
       return;
     }
 
-    const credentials = this.loginForm.getRawValue();
+    const credentials = this.loginForm().value();
     this.authStore.login(credentials);
   }
 
   togglePasswordVisibility(): void {
     this.hidePassword.update((value) => !value);
-  }
-
-  getErrorMessage(controlName: string): string {
-    const control = this.loginForm.get(controlName);
-    if (!control?.errors || !control.touched) return '';
-
-    if (control.errors['required']) return 'Campo obrigatório';
-    if (control.errors['email']) return 'Email inválido';
-    if (control.errors['minlength']) return 'Mínimo de 6 caracteres';
-
-    return '';
   }
 }

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Product, ProductFilters } from '../models/product.model';
 import { ProductRepository } from '../repositories/product.repository';
@@ -29,6 +29,7 @@ interface ProductState {
 })
 export class ProductStore {
   private readonly repository = inject(ProductRepository);
+  private readonly destroyRef = inject(DestroyRef);
 
   // Estado privado (writable signals)
   private readonly state = signal<ProductState>({
@@ -107,7 +108,7 @@ export class ProductStore {
 
     this.repository
       .findAll()
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (products) => {
           this.state.update((state) => ({
@@ -132,7 +133,7 @@ export class ProductStore {
 
     this.repository
       .findById(id)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (product) => {
           this.state.update((state) => ({
@@ -163,7 +164,7 @@ export class ProductStore {
 
     this.repository
       .create(dto)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (product) => {
           this.state.update((state) => ({
@@ -188,7 +189,7 @@ export class ProductStore {
 
     this.repository
       .update(id, dto)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updatedProduct) => {
           this.state.update((state) => ({
@@ -215,7 +216,7 @@ export class ProductStore {
 
     this.repository
       .delete(id)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.state.update((state) => ({

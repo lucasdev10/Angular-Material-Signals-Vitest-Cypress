@@ -37,7 +37,7 @@ export class AdminProductFormPageComponent {
   readonly isEditMode = signal(false);
   readonly productId = signal<string | null>(null);
 
-  readonly categories = ['Eletrônicos', 'Roupas', 'Alimentos', 'Livros', 'Outros'];
+  readonly categories = ['Electronics', 'Clothing', 'Food', 'Books', 'Other'];
 
   readonly productForm = new FormGroup({
     name: new FormControl('', {
