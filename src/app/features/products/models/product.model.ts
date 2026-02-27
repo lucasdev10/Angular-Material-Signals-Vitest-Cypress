@@ -21,7 +21,7 @@ export interface ICreateProductDto {
   name: string;
   description: string;
   price: number;
-  image?: string;
+  image: string;
   category: string;
   stock: number;
 }

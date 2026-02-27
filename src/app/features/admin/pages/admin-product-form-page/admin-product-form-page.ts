@@ -43,28 +43,26 @@ export class AdminProductFormPageComponent {
 
   readonly categories = ['Electronics', 'Clothing', 'Food', 'Books', 'Other'];
 
-  readonly productForm = form(
-    signal({
-      name: '',
-      description: '',
-      category: '',
-      price: 0,
-      stock: 0,
-      image: '',
-    }),
-    (fieldPath) => {
-      required(fieldPath.name, { message: 'Field required' });
-      minLength(fieldPath.name, 3, { message: 'Minimum of 3 characters' });
-      required(fieldPath.description, { message: 'Field required' });
-      minLength(fieldPath.description, 10, { message: 'Minimum of 10 characters' });
-      required(fieldPath.category, { message: 'Field required' });
-      required(fieldPath.price, { message: 'Field required' });
-      min(fieldPath.price, 0.1, { message: 'Minimum of 00.1' });
-      required(fieldPath.stock, { message: 'Field required' });
-      min(fieldPath.stock, 0, { message: 'Minimum of 0' });
-      required(fieldPath.image, { message: 'Field required' });
-    },
-  );
+  private readonly productModel = signal<ICreateProductDto>({
+    name: '',
+    description: '',
+    category: '',
+    price: 0,
+    stock: 0,
+    image: '',
+  });
+  readonly productForm = form(this.productModel, (fieldPath) => {
+    required(fieldPath.name, { message: 'Field required' });
+    minLength(fieldPath.name, 3, { message: 'Minimum of 3 characters' });
+    required(fieldPath.description, { message: 'Field required' });
+    minLength(fieldPath.description, 10, { message: 'Minimum of 10 characters' });
+    required(fieldPath.category, { message: 'Field required' });
+    required(fieldPath.price, { message: 'Field required' });
+    min(fieldPath.price, 0.1, { message: 'Minimum of 00.1' });
+    required(fieldPath.stock, { message: 'Field required' });
+    min(fieldPath.stock, 0, { message: 'Minimum of 0' });
+    required(fieldPath.image, { message: 'Field required' });
+  });
 
   readonly canSubmit = computed(() => this.productForm().valid() && !this.isLoading());
 
@@ -87,7 +85,7 @@ export class AdminProductFormPageComponent {
     const product = this.productStore.products().find((p) => p.id === id);
 
     if (product) {
-      this.productForm().setControlValue({ ...product });
+      this.productModel.set({ ...product });
       this.isLoading.set(false);
     } else {
       this.router.navigate(['/admin/products']);

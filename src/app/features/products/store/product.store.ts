@@ -1,5 +1,6 @@
 import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ICreateProductDto } from '@app/features/products/models/product.model';
 import { IProduct, IProductFilters } from '../models/product.model';
 import { ProductRepository } from '../repositories/product.repository';
 
@@ -153,13 +154,7 @@ export class ProductStore {
       });
   }
 
-  createProduct(dto: {
-    name: string;
-    description: string;
-    price: number;
-    category: string;
-    stock: number;
-  }): void {
+  createProduct(dto: ICreateProductDto): void {
     this.setLoading('loading');
 
     this.repository

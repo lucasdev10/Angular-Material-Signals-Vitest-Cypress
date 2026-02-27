@@ -78,7 +78,7 @@ export class UserFormPageComponent {
     const user = this.userStore.users().find((u) => u.id === id);
 
     if (user) {
-      this.userForm().setControlValue({ ...user });
+      this.userModel.set({ ...user });
       this.isLoading.set(false);
     } else {
       this.router.navigate(['/admin/products']);
