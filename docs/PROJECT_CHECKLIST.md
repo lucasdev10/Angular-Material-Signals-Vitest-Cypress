@@ -56,11 +56,11 @@
 
 ## Testes de Domínio
 
-- [ ] Deve adicionar item corretamente
-- [ ] Não deve duplicar item
-- [ ] Deve atualizar quantidade
-- [ ] Deve calcular total corretamente
-- [ ] Deve remover item corretamente
+- [x] Deve adicionar item corretamente
+- [x] Não deve duplicar item
+- [x] Deve atualizar quantidade
+- [x] Deve calcular total corretamente
+- [x] Deve remover item corretamente
 
 ---
 
@@ -76,24 +76,24 @@
 
 ## Testes do Serviço
 
-- [ ] Deve chamar endpoint correto
-- [ ] Deve tratar erro
-- [ ] Deve retornar lista vazia corretamente
-- [ ] Deve mapear dados se necessário
+- [x] Deve chamar endpoint correto
+- [x] Deve tratar erro
+- [x] Deve retornar lista vazia corretamente
+- [x] Deve mapear dados se necessário
 
 ---
 
 ## Interceptor / Middleware Global
 
-- [ ] Adicionar headers automaticamente
-- [ ] Criar tratamento global de erro
-- [ ] Criar logger de requisições
-- [ ] Criar retry/timeout
+- [x] Adicionar headers automaticamente
+- [x] Criar tratamento global de erro
+- [x] Criar logger de requisições
+- [x] Criar retry/timeout
 
 ### Testes
 
-- [ ] Deve interceptar requisição
-- [ ] Deve tratar erro 401 corretamente
+- [x] Deve interceptar requisição
+- [x] Deve tratar erro 401 corretamente
 
 ---
 
@@ -101,32 +101,32 @@
 
 ## Estado da Feature
 
-- [ ] Criar store/service/state
-- [ ] Criar estado de loading
-- [ ] Criar estado de erro
-- [ ] Criar selector de produtos
-- [ ] Criar selector de loading
+- [x] Criar store/service/state
+- [x] Criar estado de loading
+- [x] Criar estado de erro
+- [x] Criar selector de produtos
+- [x] Criar selector de loading
 
 ### Testes de Estado
 
-- [ ] Deve atualizar loading corretamente
-- [ ] Deve atualizar lista após sucesso
-- [ ] Deve atualizar erro após falha
+- [x] Deve atualizar loading corretamente
+- [x] Deve atualizar lista após sucesso
+- [x] Deve atualizar erro após falha
 
 ---
 
 ## Componentes
 
-- [ ] ProductList
-- [ ] ProductCard
-- [ ] ProductDetails
+- [x] ProductList
+- [x] ProductCard
+- [x] ProductDetails
 
 ### Testes de Componentes
 
-- [ ] Deve renderizar lista corretamente
-- [ ] Deve exibir loading
-- [ ] Deve exibir erro
-- [ ] Deve emitir evento ao adicionar ao carrinho
+- [x] Deve renderizar lista corretamente
+- [x] Deve exibir loading
+- [x] Deve exibir erro
+- [x] Deve emitir evento ao adicionar ao carrinho
 
 ---
 
@@ -134,33 +134,33 @@
 
 ## Estado do Carrinho
 
-- [ ] Criar store/service/cartState
-- [ ] Criar selector de total
-- [ ] Criar selector de quantidade total
-- [ ] Persistir no localStorage
-- [ ] Carregar estado salvo ao iniciar
+- [x] Criar store/service/cartState
+- [x] Criar selector de total
+- [x] Criar selector de quantidade total
+- [x] Persistir no localStorage
+- [x] Carregar estado salvo ao iniciar
 
 ### Testes
 
-- [ ] Deve adicionar item
-- [ ] Deve remover item
-- [ ] Deve atualizar quantidade
-- [ ] Deve calcular total corretamente
-- [ ] Deve persistir no localStorage
-- [ ] Deve recuperar estado salvo
-- [ ] Deve limpar carrinho
+- [x] Deve adicionar item
+- [x] Deve remover item
+- [x] Deve atualizar quantidade
+- [x] Deve calcular total corretamente
+- [x] Deve persistir no localStorage
+- [x] Deve recuperar estado salvo
+- [x] Deve limpar carrinho
 
 ---
 
 ## Integração com Header
 
-- [ ] Mostrar badge com quantidade total
-- [ ] Atualizar automaticamente ao modificar carrinho
+- [x] Mostrar badge com quantidade total
+- [x] Atualizar automaticamente ao modificar carrinho
 
 ### Testes
 
-- [ ] Badge deve atualizar ao adicionar item
-- [ ] Deve reagir à mudança de estado
+- [x] Badge deve atualizar ao adicionar item
+- [x] Deve reagir à mudança de estado
 
 ---
 
@@ -168,39 +168,39 @@
 
 ## Formulário
 
-- [ ] Campo nome obrigatório
-- [ ] Preço \> 0
-- [ ] Validação de tamanho mínimo
-- [ ] Botão desabilitado se inválido
+- [x] Campo nome obrigatório
+- [x] Preço \> 0
+- [x] Validação de tamanho mínimo
+- [x] Botão desabilitado se inválido
 
 ### Testes de Formulário
 
-- [ ] Deve invalidar formulário vazio
-- [ ] Deve validar preço negativo
-- [ ] Deve emitir dados corretos no submit
+- [x] Deve invalidar formulário vazio
+- [x] Deve validar preço negativo
+- [x] Deve emitir dados corretos no submit
 
 ---
 
 ## Integração CRUD
 
-- [ ] Criar produto
-- [ ] Atualizar produto
-- [ ] Deletar produto
-- [ ] Atualizar lista após operação
+- [x] Criar produto
+- [x] Atualizar produto
+- [x] Deletar produto
+- [x] Atualizar lista após operação
 
 ### Testes de Integração
 
-- [ ] Deve atualizar lista após criar produto
-- [ ] Deve remover produto da lista após deletar
+- [x] Deve atualizar lista após criar produto
+- [x] Deve remover produto da lista após deletar
 
 ---
 
 # 🧪 8. TESTES DE INTEGRAÇÃO
 
-- [ ] Componente + Estado
-- [ ] Estado + Serviço
-- [ ] Form + Estado
-- [ ] Carrinho + Header
+- [x] Componente + Estado
+- [x] Estado + Serviço
+- [x] Form + Estado
+- [x] Carrinho + Header
 
 ---
 

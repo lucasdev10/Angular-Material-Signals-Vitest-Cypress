@@ -43,7 +43,7 @@ export class AdminProductFormPageComponent {
 
   readonly categories = ['Electronics', 'Clothing', 'Food', 'Books', 'Other'];
 
-  private readonly productModel = signal<ICreateProductDto>({
+  readonly productModel = signal<ICreateProductDto>({
     name: '',
     description: '',
     category: '',
@@ -51,6 +51,7 @@ export class AdminProductFormPageComponent {
     stock: 0,
     image: '',
   });
+
   readonly productForm = form(this.productModel, (fieldPath) => {
     required(fieldPath.name, { message: 'Field required' });
     minLength(fieldPath.name, 3, { message: 'Minimum of 3 characters' });

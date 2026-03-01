@@ -11,7 +11,7 @@ import { ICart, ICartItem } from '../models/cart.model';
   providedIn: 'root',
 })
 export class CartStore {
-  private readonly storage = inject(StorageService<ICart>);
+  private readonly storageService = inject(StorageService<ICart>);
   private readonly STORAGE_KEY = 'cart';
 
   // Taxas e configurações
@@ -37,7 +37,7 @@ export class CartStore {
     // Persiste no localStorage quando o estado muda
     effect(() => {
       const cart = this.state();
-      this.storage.set(this.STORAGE_KEY, cart);
+      this.storageService.set(this.STORAGE_KEY, cart);
     });
   }
 
@@ -140,7 +140,7 @@ export class CartStore {
 
   private loadFromStorage(): ICart {
     try {
-      const stored = this.storage.get(this.STORAGE_KEY);
+      const stored = this.storageService.get(this.STORAGE_KEY);
       return (
         stored || {
           items: [],
