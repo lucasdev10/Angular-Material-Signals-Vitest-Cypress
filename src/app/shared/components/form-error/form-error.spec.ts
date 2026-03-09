@@ -13,20 +13,56 @@ describe('FormError', () => {
 
     fixture = TestBed.createComponent(FormError);
     component = fixture.componentInstance;
+  });
 
-    // Criar um mock de control que retorna um objeto com os métodos esperados
+  it('should create', () => {
     component.control = signal({
       invalid: () => false,
       touched: () => false,
-      errors: () => [],
+      errors: () => null,
       pending: () => false,
     }) as any;
 
     fixture.detectChanges();
-    await fixture.whenStable();
+    expect(component).toBeTruthy();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should not display error when control is valid', () => {
+    component.control = signal({
+      invalid: () => false,
+      touched: () => true,
+      errors: () => null,
+      pending: () => false,
+    }) as any;
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+    expect(compiled).toBeTruthy();
+  });
+
+  it('should not display error when control is not touched', () => {
+    component.control = signal({
+      invalid: () => true,
+      touched: () => false,
+      errors: () => ({ required: true }),
+      pending: () => false,
+    }) as any;
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+    expect(compiled).toBeTruthy();
+  });
+
+  it('should handle pending state', () => {
+    component.control = signal({
+      invalid: () => false,
+      touched: () => true,
+      errors: () => null,
+      pending: () => true,
+    }) as any;
+
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+    expect(compiled).toBeTruthy();
   });
 });

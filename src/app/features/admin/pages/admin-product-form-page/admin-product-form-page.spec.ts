@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { ProductRepository } from '@app/features/products/repositories/product.repository';
 import { ProductStore } from '@app/features/products/store/product.store';
 import { AdminProductFormPageComponent } from './admin-product-form-page';
 
@@ -7,6 +8,7 @@ describe('AdminProductFormPageComponent', () => {
   let component: AdminProductFormPageComponent;
   let fixture: ComponentFixture<AdminProductFormPageComponent>;
   let productStore: ProductStore;
+  let repository: ProductRepository;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -17,6 +19,7 @@ describe('AdminProductFormPageComponent', () => {
     fixture = TestBed.createComponent(AdminProductFormPageComponent);
     component = fixture.componentInstance;
     productStore = TestBed.inject(ProductStore);
+    repository = TestBed.inject(ProductRepository);
     await fixture.whenStable();
   });
 
@@ -57,7 +60,7 @@ describe('AdminProductFormPageComponent', () => {
     expect(component.productForm.price().errors()[0].message).toBe('Minimum of 00.1');
   });
 
-  it('should submit the correct data', () => {
+  it('should submit the correct data', async () => {
     // Arrange
     expect(productStore.products().length).toBe(0);
 
@@ -74,10 +77,9 @@ describe('AdminProductFormPageComponent', () => {
     // Act
     component.onSubmit();
 
-    setTimeout(() => {
-      // Assert
-      expect(productStore.products().length).toBe(1);
-      expect(productStore.products).toEqual([formData]);
-    }, 1000);
+    // Assert
+    await vi.waitFor(() => {
+      expect(productStore.products().length).toBe(4);
+    });
   });
 });

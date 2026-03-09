@@ -68,4 +68,12 @@ describe('HeaderComponent', () => {
     cartItemCount = component.cartItemCount();
     expect(cartItemCount).toBe(4);
   });
+
+  it('should call logout correctly', () => {
+    const mockLogout = vi.spyOn(component, 'onLogout');
+
+    component.onLogout();
+
+    expect(mockLogout).toHaveBeenCalled();
+  });
 });

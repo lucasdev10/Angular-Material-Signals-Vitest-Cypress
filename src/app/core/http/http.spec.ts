@@ -58,7 +58,7 @@ describe('HttpService', () => {
   it('should get with error', async () => {
     vi.spyOn(STORAGE_MOCK, 'get').mockReturnValue(null);
 
-    expect(async () => {
+    await expect(async () => {
       await firstValueFrom(service.get('/api/test'));
     }).rejects.toThrowError(`Resource '/api/test' not found`);
   });
@@ -79,10 +79,10 @@ describe('HttpService', () => {
     expect(response).toEqual(products[0]);
   });
 
-  it('should get data with error by ID incorrectly', () => {
+  it('should get data with error by ID incorrectly', async () => {
     vi.spyOn(STORAGE_MOCK, 'get').mockReturnValue(products);
 
-    expect(
+    await expect(
       async () => await firstValueFrom(service.getById('/api/test', '999')),
     ).rejects.toThrowError(`Item with id '999' not found in '/api/test'`);
   });
