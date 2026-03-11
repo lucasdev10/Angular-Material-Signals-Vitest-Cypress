@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
+import { ICartItem } from '@app/features/cart/models/cart.model';
 import { APP_CONFIG } from '@app/shared/config/app.config';
-import { ICartItem } from '../models/cart.model';
 
 /**
  * Resultado de validação

@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ILoginCredentials } from '@app/features/auth/models/auth.model';
 import { AuthStore } from '@app/features/auth/store/auth.store';
 import { FormError } from '@app/shared';
 import { EUserRole } from '../../models/user.model';
@@ -78,12 +79,7 @@ export class UserFormPageComponent {
     const user = this.userStore.users().find((u) => u.id === id);
 
     if (user) {
-      this.userModel.set({
-        email: user.email,
-        fullName: user.fullName,
-        password: user.password || '',
-        role: user.role,
-      });
+      this.userModel.set({ ...(user as ICreateUserDto) });
       this.isLoading.set(false);
     } else {
       this.router.navigate(['/admin/products']);
@@ -113,7 +109,7 @@ export class UserFormPageComponent {
     }
 
     if (!this.isEditMode()) {
-      this.authStore.login({ email: formValue.email, password: formValue.password });
+      this.authStore.login({ ...(formValue as ILoginCredentials) });
     }
 
     // Aguarda um pouco para simular salvamento

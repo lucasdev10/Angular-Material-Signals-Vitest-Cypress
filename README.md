@@ -46,7 +46,7 @@ src/app/
 **Gerenciamento de Estado**: Angular Signals (v16+)
 
 - Estado reativo com detecção automática de mudanças
-- Valores computados com memoização automática
+- Valores computados com memorização automática
 - Melhor performance que os tradicionais RxJS BehaviorSubjects
 
 **Lazy Loading**: Todos os módulos de features são carregados sob demanda
@@ -73,7 +73,7 @@ src/app/
 - **Framework**: Angular 21
 - **UI Library**: Angular Material 21
 - **Gerenciamento de Estado**: Angular Signals
-- **Formulários**: Reactive Forms com API baseada em Signals
+- **Formulários**: Signals Form
 - **HTTP Client**: Angular HttpClient
 - **Roteamento**: Angular Router com lazy loading
 - **Testes**: Vitest (unitários) + Cypress (e2e)

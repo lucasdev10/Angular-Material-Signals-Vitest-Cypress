@@ -1,5 +1,6 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { StorageService } from '@app/core/storage/storage';
+import { CartDomainService } from '@app/domain/cart/cart-domain.service';
 import { IProduct } from '@app/features/products/models/product.model';
 import { APP_CONFIG } from '@app/shared/config/app.config';
 import { ICart, ICartItem } from '../models/cart.model';
@@ -13,12 +14,8 @@ import { ICart, ICartItem } from '../models/cart.model';
 })
 export class CartStore {
   private readonly storageService = inject(StorageService<ICart>);
+  private readonly cartDomainService = inject(CartDomainService);
   private readonly STORAGE_KEY = APP_CONFIG.storage.CART_KEY;
-
-  // Configurações do carrinho
-  private readonly TAX_RATE = APP_CONFIG.cart.TAX_RATE;
-  private readonly SHIPPING_THRESHOLD = APP_CONFIG.cart.SHIPPING_THRESHOLD;
-  private readonly SHIPPING_COST = APP_CONFIG.cart.SHIPPING_COST;
 
   // Estado privado
   private readonly state = signal<ICart>(this.loadFromStorage());
@@ -32,7 +29,12 @@ export class CartStore {
   readonly itemCount = computed(() => this.state().itemCount);
   readonly isEmpty = computed(() => this.items().length === 0);
   readonly hasItems = computed(() => this.items().length > 0);
-  readonly hasFreeShipping = computed(() => this.subtotal() >= this.SHIPPING_THRESHOLD);
+  readonly hasFreeShipping = computed(() =>
+    this.cartDomainService.qualifiesForFreeShipping(this.subtotal()),
+  );
+  readonly amountForFreeShipping = computed(() =>
+    this.cartDomainService.amountNeededForFreeShipping(this.subtotal()),
+  );
 
   constructor() {
     // Persiste no localStorage quando o estado muda
@@ -47,27 +49,16 @@ export class CartStore {
    */
 
   addItem(product: IProduct, quantity = 1): void {
-    // Validações de entrada
-    if (!product?.id) {
-      throw new Error('Product is required and must have an ID');
-    }
+    // Usar domain service para validar se pode adicionar o produto
+    const validationResult = this.cartDomainService.canAddProductToCart(
+      product.id,
+      quantity,
+      this.items(),
+      product.stock,
+    );
 
-    if (!Number.isInteger(quantity) || quantity < APP_CONFIG.cart.MIN_QUANTITY_PER_ITEM) {
-      throw new Error(
-        `Quantity must be a positive integer (minimum: ${APP_CONFIG.cart.MIN_QUANTITY_PER_ITEM})`,
-      );
-    }
-
-    if (quantity > APP_CONFIG.cart.MAX_QUANTITY_PER_ITEM) {
-      throw new Error(`Quantity cannot exceed ${APP_CONFIG.cart.MAX_QUANTITY_PER_ITEM}`);
-    }
-
-    if (product.stock <= 0) {
-      throw new Error('Product is out of stock');
-    }
-
-    if (quantity > product.stock) {
-      throw new Error(`Only ${product.stock} items available in stock`);
+    if (!validationResult.isValid) {
+      throw new Error(validationResult.errors.join('; '));
     }
 
     const currentItems = this.items();
@@ -78,17 +69,6 @@ export class CartStore {
     if (existingItemIndex !== -1) {
       const existingItem = currentItems[existingItemIndex];
       const newQuantity = existingItem.quantity + quantity;
-
-      // Verificar se a nova quantidade não excede o estoque
-      if (newQuantity > product.stock) {
-        throw new Error(
-          `Cannot add ${quantity} items. Only ${product.stock - existingItem.quantity} more items available`,
-        );
-      }
-
-      if (newQuantity > APP_CONFIG.cart.MAX_QUANTITY_PER_ITEM) {
-        throw new Error(`Total quantity cannot exceed ${APP_CONFIG.cart.MAX_QUANTITY_PER_ITEM}`);
-      }
 
       // Atualiza quantidade do item existente
       updatedItems = currentItems.map((item, index) =>
@@ -127,21 +107,9 @@ export class CartStore {
       throw new Error('Product ID is required');
     }
 
-    if (!Number.isInteger(quantity) || quantity < 0) {
-      throw new Error('Quantity must be a non-negative integer');
-    }
-
     if (quantity === 0) {
       this.removeItem(productId);
       return;
-    }
-
-    if (quantity < APP_CONFIG.cart.MIN_QUANTITY_PER_ITEM) {
-      throw new Error(`Quantity must be at least ${APP_CONFIG.cart.MIN_QUANTITY_PER_ITEM}`);
-    }
-
-    if (quantity > APP_CONFIG.cart.MAX_QUANTITY_PER_ITEM) {
-      throw new Error(`Quantity cannot exceed ${APP_CONFIG.cart.MAX_QUANTITY_PER_ITEM}`);
     }
 
     const currentItems = this.items();
@@ -151,9 +119,17 @@ export class CartStore {
       throw new Error('Product not found in cart');
     }
 
-    // Verificar estoque disponível
-    if (quantity > existingItem.product.stock) {
-      throw new Error(`Only ${existingItem.product.stock} items available in stock`);
+    // Criar um item temporário para validação
+    const tempItem: ICartItem = {
+      ...existingItem,
+      quantity,
+      subtotal: existingItem.product.price * quantity,
+    };
+
+    // Usar domain service para validar o item
+    const validationResult = this.cartDomainService.validateCartItem(tempItem);
+    if (!validationResult.isValid) {
+      throw new Error(validationResult.errors.join('; '));
     }
 
     const updatedItems = currentItems.map((item) =>
@@ -192,19 +168,22 @@ export class CartStore {
    */
 
   private updateCart(items: ICartItem[]): void {
-    const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
-    const shipping = subtotal >= this.SHIPPING_THRESHOLD ? 0 : this.SHIPPING_COST;
-    const tax = subtotal * this.TAX_RATE;
-    const total = subtotal + shipping + tax;
-    const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+    // Validar o carrinho usando domain service
+    const validationResult = this.cartDomainService.validateCart(items);
+    if (!validationResult.isValid) {
+      throw new Error(`Cart validation failed: ${validationResult.errors.join('; ')}`);
+    }
+
+    // Usar domain service para calcular totais
+    const calculations = this.cartDomainService.calculateCartTotals(items);
 
     this.state.set({
       items,
-      subtotal,
-      shipping,
-      tax,
-      total,
-      itemCount,
+      subtotal: calculations.subtotal,
+      shipping: calculations.shipping,
+      tax: calculations.tax,
+      total: calculations.total,
+      itemCount: calculations.itemCount,
     });
   }
 
@@ -248,5 +227,30 @@ export class CartStore {
   getProductQuantity(productId: string): number {
     const item = this.getItemByProductId(productId);
     return item?.quantity || 0;
+  }
+
+  /**
+   * Métodos que utilizam o domain service
+   */
+
+  formatCurrency(amount: number): string {
+    return this.cartDomainService.formatCurrency(amount);
+  }
+
+  validateCurrentCart(): { isValid: boolean; errors: string[] } {
+    return this.cartDomainService.validateCart(this.items());
+  }
+
+  canAddProduct(
+    productId: string,
+    quantity: number,
+    productStock: number,
+  ): { isValid: boolean; errors: string[] } {
+    return this.cartDomainService.canAddProductToCart(
+      productId,
+      quantity,
+      this.items(),
+      productStock,
+    );
   }
 }
