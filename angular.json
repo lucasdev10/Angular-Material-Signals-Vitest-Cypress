@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "Angular-Material-Signals-Vitest-Cypress": {
+    "Coffee-Workshop": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -105,10 +105,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Angular-Material-Signals-Vitest-Cypress:build:production"
+              "buildTarget": "Coffee-Workshop:build:production"
             },
             "development": {
-              "buildTarget": "Angular-Material-Signals-Vitest-Cypress:build:development"
+              "buildTarget": "Coffee-Workshop:build:development"
             }
           },
           "defaultConfiguration": "development"

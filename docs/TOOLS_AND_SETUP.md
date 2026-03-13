@@ -239,7 +239,7 @@ COPY . .
 RUN npm run build
 
 FROM nginx:alpine
-COPY --from=build /app/dist/Angular-Material-Signals-Vitest-Cypress/browser /usr/share/nginx/html
+COPY --from=build /app/dist/Coffee-Workshop/browser /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 ```
@@ -318,7 +318,7 @@ jobs:
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/Angular-Material-Signals-Vitest-Cypress/browser
+          publish_dir: ./dist/Coffee-Workshop
 ```
 
 ---

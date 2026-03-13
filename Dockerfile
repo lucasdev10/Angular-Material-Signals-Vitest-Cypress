@@ -23,7 +23,7 @@ FROM nginx:alpine
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy built application from build stage
-COPY --from=build /app/dist/Angular-Material-Signals-Vitest-Cypress/browser /usr/share/nginx/html
+COPY --from=build /app/dist/Coffee-Workshop/browser /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80

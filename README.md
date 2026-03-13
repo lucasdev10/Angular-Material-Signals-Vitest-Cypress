@@ -1,7 +1,7 @@
-# Angular Material Signals Vitest Cypress
+# Coffee Workshop
 
-[![CI](https://github.com/lucasdev10/Angular-Material-Signals-Vitest-Cypress/actions/workflows/ci.yml/badge.svg)](https://github.com/lucasdev10/Angular-Material-Signals-Vitest-Cypress/actions/workflows/ci.yml)
-[![Deploy](https://github.com/lucasdev10/Angular-Material-Signals-Vitest-Cypress/actions/workflows/deploy.yml/badge.svg)](https://github.com/lucasdev10/Angular-Material-Signals-Vitest-Cypress/actions/workflows/deploy.yml)
+[![CI](https://github.com/lucasdev10/Coffee-Workshop/actions/workflows/ci.yml/badge.svg)](https://github.com/lucasdev10/Coffee-Workshop/actions/workflows/ci.yml)
+[![Deploy](https://github.com/lucasdev10/Coffee-Workshop/actions/workflows/deploy.yml/badge.svg)](https://github.com/lucasdev10/Coffee-Workshop/actions/workflows/deploy.yml)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 Projeto de estudo de e-commerce construído com Angular 21, demonstrando arquitetura moderna, estratégias de teste e melhores práticas de desenvolvimento.

@@ -39,7 +39,7 @@ jobs:
       - name: Deploy to Netlify (Preview)
         uses: nwtgck/actions-netlify@v2
         with:
-          publish-dir: './dist/Angular-Material-Signals-Vitest-Cypress/browser'
+          publish-dir: './dist/Coffee-Workshop/browser'
           production-branch: main
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: 'Deploy preview from GitHub Actions'

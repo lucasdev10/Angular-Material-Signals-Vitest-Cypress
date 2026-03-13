@@ -10,5 +10,5 @@ import { HeaderComponent } from './core/layout/header/header';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  protected readonly title = signal('Angular-Material-Signals-Vitest-Cypress');
+  protected readonly title = signal('Coffee-Workshop');
 }
