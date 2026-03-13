@@ -14,7 +14,7 @@ Este documento consolida informações sobre as ferramentas, tecnologias e confi
 - **Angular Material 21**: Biblioteca de componentes UI
 - **TypeScript**: Linguagem de programação
 - **RxJS**: Programação reativa
-- **Angular Signals**: Gerenciamento de estado reativo
+- **NgRx SignalStore**: Gerenciamento de estado reativo
 
 ### Ferramentas de Desenvolvimento
 
