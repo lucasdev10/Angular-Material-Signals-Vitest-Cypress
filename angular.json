@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "Coffee-Workshop": {
+    "CoffeeWorkshop": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -105,10 +105,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Coffee-Workshop:build:production"
+              "buildTarget": "CoffeeWorkshop:build:production"
             },
             "development": {
-              "buildTarget": "Coffee-Workshop:build:development"
+              "buildTarget": "CoffeeWorkshop:build:development"
             }
           },
           "defaultConfiguration": "development"
