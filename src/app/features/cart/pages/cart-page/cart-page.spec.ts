@@ -10,7 +10,7 @@ import { CartPage } from './cart-page';
 describe('CartPage', () => {
   let component: CartPage;
   let fixture: ComponentFixture<CartPage>;
-  let mockCartStore: Partial<CartStore>;
+  let mockCartStore: Partial<InstanceType<typeof CartStore>>;
 
   const mockProduct: IProduct = {
     id: Utils.generateId(),

@@ -9,7 +9,7 @@ import { HeaderComponent } from './header';
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
-  let cartStore: CartStore;
+  let cartStore: InstanceType<typeof CartStore>;
 
   const product: IProduct = {
     id: Utils.generateId(),

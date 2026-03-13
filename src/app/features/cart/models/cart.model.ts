@@ -1,4 +1,5 @@
 import { IProduct } from '@app/features/products/models/product.model';
+import { LoadingState } from '@app/shared';
 
 /**
  * Item do carrinho
@@ -35,4 +36,18 @@ export interface IAddToCartDto {
 export interface IUpdateCartItemDto {
   productId: string;
   quantity: number;
+}
+
+/**
+ * Interface da store de carrinho
+ */
+export interface ICartStoreState {
+  items: ICartItem[];
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+  itemCount: number;
+  loading: LoadingState;
+  error: string | null;
 }

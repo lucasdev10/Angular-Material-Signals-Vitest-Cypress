@@ -13,7 +13,7 @@ import { of } from 'rxjs';
  */
 describe('Product Flow Integration Tests', () => {
   let productStore: InstanceType<typeof ProductStore>;
-  let cartStore: CartStore;
+  let cartStore: InstanceType<typeof CartStore>;
   let productRepository: ProductRepository;
 
   const mockProducts: IProduct[] = [

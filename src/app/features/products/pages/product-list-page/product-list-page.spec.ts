@@ -12,7 +12,7 @@ describe('ProductListPageComponent', () => {
   let component: ProductListPageComponent;
   let fixture: ComponentFixture<ProductListPageComponent>;
   let productStore: InstanceType<typeof ProductStore>;
-  let cartStore: CartStore;
+  let cartStore: InstanceType<typeof CartStore>;
   let productRepository: ProductRepository;
 
   const mockProducts: IProduct[] = [
