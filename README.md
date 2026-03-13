@@ -43,7 +43,7 @@ src/app/
 
 ### Principais Decisões Arquiteturais
 
-**Gerenciamento de Estado**: NgRx
+**Gerenciamento de Estado**: NgRx 21
 
 - Estado reativo com detecção automática de mudanças
 - Valores computados com memorização automática
@@ -72,7 +72,7 @@ src/app/
 
 - **Framework**: Angular 21
 - **UI Library**: Angular Material 21
-- **Gerenciamento de Estado**: NgRx
+- **Gerenciamento de Estado**: NgRx 21
 - **Formulários**: Signals Form
 - **HTTP Client**: Angular HttpClient
 - **Roteamento**: Angular Router com lazy loading

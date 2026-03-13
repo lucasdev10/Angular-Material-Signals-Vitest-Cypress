@@ -1,6 +1,7 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, ErrorHandler, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';
+import { provideStore } from '@ngrx/store';
 import { routes } from './app.routes';
 import { authInterceptor, cacheInterceptor, errorInterceptor, loadingInterceptor } from './core';
 import { GlobalErrorHandler } from './core/handlers/global-error.handler';
@@ -20,24 +21,22 @@ export const appConfig: ApplicationConfig = {
     // Change Detection Strategy
     // Zoneless (experimental - melhor performance)
     provideZonelessChangeDetection(),
-
     // HTTP Client com interceptors
     provideHttpClient(
       withFetch(), // Usa Fetch API em vez de XMLHttpRequest
       withInterceptors([authInterceptor, errorInterceptor, loadingInterceptor, cacheInterceptor]),
     ),
-
     // Router com features modernas
     provideRouter(
       routes,
       withComponentInputBinding(), // Permite usar route params como @Input()
-      withViewTransitions(), // Animações de transição entre rotas
+      withViewTransitions(),
     ),
-
     // Global Error Handler
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler,
     },
+    provideStore(),
   ],
 };
