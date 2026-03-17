@@ -97,7 +97,10 @@ describe('ProductListPageComponent', () => {
   it('should render product cards when products are loaded', () => {
     setupTest(of(mockProducts));
     store.overrideSelector(selectFilteredProducts, [...mockProducts]);
+    store.overrideSelector(selectIsLoading, false);
+    store.overrideSelector(selectError, null);
     store.refreshState();
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const productCards = compiled.querySelectorAll('app-product-card');
     expect(productCards.length).toBe(2);
