@@ -72,8 +72,6 @@ describe('UserFacade', () => {
     store.overrideSelector(selectFilteredUsers, mockUsers);
     store.overrideSelector(selectUserCount, mockUsers.length);
     store.overrideSelector(selectFilteredUserCount, mockUsers.length);
-
-    store.refreshState();
   });
 
   describe('selectors', () => {

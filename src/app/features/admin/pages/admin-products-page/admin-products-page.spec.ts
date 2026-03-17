@@ -109,7 +109,6 @@ describe('AdminProductsPageComponent', () => {
     };
 
     store.overrideSelector(selectProducts, [...mockProducts, newProduct]);
-    store.refreshState();
 
     productFacade.createProduct(mockNewProduct);
 
@@ -137,8 +136,6 @@ describe('AdminProductsPageComponent', () => {
     productFacade.deleteProduct(productId);
 
     await firstValueFrom(productFacade.isLoading$.pipe(filter((isLoading) => !isLoading)));
-
-    store.refreshState();
 
     products = await firstValueFrom(productFacade.products$);
 

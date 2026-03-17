@@ -34,6 +34,10 @@ describe('AdminProductFormPageComponent', () => {
     store = TestBed.inject(MockStore);
     productFacade = TestBed.inject(ProductFacade);
     repository = TestBed.inject(ProductRepository);
+
+    store.overrideSelector(selectProducts, []);
+    store.refreshState();
+
     await fixture.whenStable();
   });
 
@@ -97,7 +101,6 @@ describe('AdminProductFormPageComponent', () => {
     store.overrideSelector(selectProducts, [
       { ...formData, id: 'product-id-1', createdAt: 1773778252, updatedAt: 1773778252, rating: 0 },
     ]);
-    store.refreshState();
 
     // Assert
     let newProducts = await firstValueFrom(productFacade.products$);

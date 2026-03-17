@@ -71,7 +71,6 @@ describe('Product Flow Integration Tests', () => {
     productFacade = TestBed.inject(ProductFacade);
 
     store.overrideSelector(selectProducts, mockProducts);
-    store.refreshState();
 
     cartStore.clear();
   });
@@ -114,7 +113,6 @@ describe('Product Flow Integration Tests', () => {
       productFacade.setFilters({ category: 'Electronics' });
 
       store.overrideSelector(selectFilteredProducts, [mockProducts[1]]);
-      store.refreshState();
 
       const productsFiltered = await firstValueFrom(productFacade.filteredProducts$);
 
@@ -188,7 +186,6 @@ describe('Product Flow Integration Tests', () => {
       productFacade.setFilters({ search: 'coffee' });
 
       store.overrideSelector(selectFilteredProducts, [mockProducts[0]]);
-      store.refreshState();
 
       const productsFiltered = await firstValueFrom(productFacade.filteredProducts$);
 

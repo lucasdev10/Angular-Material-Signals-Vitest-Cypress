@@ -184,7 +184,6 @@ describe('ProductListPageComponent', () => {
     store.overrideSelector(selectFilteredProducts, mockProducts);
     store.overrideSelector(selectIsLoading, false);
     store.overrideSelector(selectError, null);
-    store.refreshState();
 
     fixture.detectChanges();
 
