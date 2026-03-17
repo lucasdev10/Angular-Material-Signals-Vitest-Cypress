@@ -22,6 +22,7 @@ describe('AdminProductFormPageComponent', () => {
           initialState: {
             product: {
               ...initialProductState,
+              products: [],
             },
           },
         }),
