@@ -35,6 +35,18 @@ describe('HeaderComponent', () => {
           initialState: {
             cart: {
               ...initialCartState,
+              items: [
+                {
+                  product: mockProduct,
+                  quantity: 2,
+                  subtotal: mockProduct.price * 2,
+                },
+              ],
+              itemCount: 2,
+              shipping: 0,
+              subtotal: mockProduct.price * 2,
+              total: mockProduct.price * 2,
+              tax: 10,
             },
             auth: {
               ...initialAuthState,
@@ -48,6 +60,8 @@ describe('HeaderComponent', () => {
     cartFacade.clear();
 
     store = TestBed.inject(MockStore);
+    store.overrideSelector(selectItemCount, 0);
+    store.refreshState();
 
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
