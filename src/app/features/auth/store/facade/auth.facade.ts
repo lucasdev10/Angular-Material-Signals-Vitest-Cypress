@@ -30,7 +30,7 @@ export class AuthFacade {
     this.initializeAuth();
   }
 
-  private initializeAuth(): void {
+  initializeAuth(): void {
     const token = this.storage.get('auth_token') as string | null;
     const user = this.storage.get('auth_user') as IUser | null;
 
