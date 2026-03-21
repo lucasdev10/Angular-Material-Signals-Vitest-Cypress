@@ -1,6 +1,5 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, map } from 'rxjs';
 import { ICreateUserDto, IUpdateUserDto, IUserFilters } from '../../models/user.model';
 import {
   selectError,
@@ -32,19 +31,16 @@ import { UserActions } from '../user.actions';
 export class UserFacade {
   private readonly store = inject(Store);
 
-  readonly users$ = this.store.select(selectUsers);
-  readonly selectedUser$ = this.store.select(selectSelectedUser);
-  readonly filters$ = this.store.select(selectFilters);
-  readonly loading$ = this.store.select(selectLoading);
-  readonly error$ = this.store.select(selectError);
-  readonly isLoading$ = this.store.select(selectIsLoading);
-  readonly hasError$ = this.store.select(selectHasError);
-  readonly filteredUsers$ = this.store.select(selectFilteredUsers);
-  readonly userCount$ = this.store.select(selectUserCount);
-  readonly filteredUserCount$ = this.store.select(selectFilteredUserCount);
-  readonly userWithLoading$ = combineLatest([this.selectedUser$, this.isLoading$]).pipe(
-    map(([user, isLoading]) => ({ user, isLoading })),
-  );
+  readonly users = this.store.selectSignal(selectUsers);
+  readonly selectedUser = this.store.selectSignal(selectSelectedUser);
+  readonly filters = this.store.selectSignal(selectFilters);
+  readonly loading = this.store.selectSignal(selectLoading);
+  readonly error = this.store.selectSignal(selectError);
+  readonly isLoading = this.store.selectSignal(selectIsLoading);
+  readonly hasError = this.store.selectSignal(selectHasError);
+  readonly filteredUsers = this.store.selectSignal(selectFilteredUsers);
+  readonly userCount = this.store.selectSignal(selectUserCount);
+  readonly filteredUserCount = this.store.selectSignal(selectFilteredUserCount);
 
   /**
    * Carrega todos os usuários

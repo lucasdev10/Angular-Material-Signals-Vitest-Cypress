@@ -11,7 +11,6 @@ import {
 } from '@app/features/cart/store';
 import { IProduct } from '@app/features/products/models/product.model';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { firstValueFrom } from 'rxjs';
 import { HeaderComponent } from './header';
 
 describe('HeaderComponent', () => {
@@ -101,8 +100,7 @@ describe('HeaderComponent', () => {
     store.refreshState();
 
     // Arrange
-    let cartItemCount = await firstValueFrom(component.cartItemCount$);
-    expect(cartItemCount).toBe(0);
+    expect(component.cartItemCount()).toBe(0);
 
     store.overrideSelector(selectItemCount, 4);
     store.refreshState();
@@ -112,8 +110,7 @@ describe('HeaderComponent', () => {
     fixture.detectChanges();
 
     // Assert
-    cartItemCount = await firstValueFrom(component.cartItemCount$);
-    expect(cartItemCount).toBe(4);
+    expect(component.cartItemCount()).toBe(4);
   });
 
   it('should call logout correctly', () => {

@@ -181,30 +181,16 @@ describe('ProductListPageComponent', () => {
     expect(productsGrid).toBeTruthy();
   });
 
-  it('should expose correct observables from facade', async () => {
-    // Override selectors
+  it('should expose correct signals from facade', () => {
     store.overrideSelector(selectFilteredProducts, mockProducts);
     store.overrideSelector(selectIsLoading, false);
     store.overrideSelector(selectError, null);
+    store.refreshState();
 
     fixture.detectChanges();
 
-    await vi.waitFor(() => {
-      component.products$.subscribe((products) => {
-        expect(products).toEqual(mockProducts);
-      });
-    });
-
-    await vi.waitFor(() => {
-      component.isLoading$.subscribe((isLoading) => {
-        expect(isLoading).toEqual(false);
-      });
-    });
-
-    await vi.waitFor(() => {
-      component.error$.subscribe((error) => {
-        expect(error).toBeNull();
-      });
-    });
+    expect(component.products()).toEqual(mockProducts);
+    expect(component.isLoading()).toEqual(false);
+    expect(component.error()).toBeNull();
   });
 });

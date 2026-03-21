@@ -13,7 +13,6 @@ import {
 import { IProduct } from '@app/features/products/models/product.model';
 import { ProductRepository } from '@app/features/products/repositories/product.repository';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { combineLatest, filter, firstValueFrom } from 'rxjs';
 import {
   initialProductState,
   ProductFacade,
@@ -94,17 +93,13 @@ describe('Product Flow Integration Tests', () => {
   });
 
   describe('Browse and Add to Cart Flow', () => {
-    it('should load products and add to cart', async () => {
+    it('should load products and add to cart', () => {
       // Arrange
       productFacade.loadProducts();
 
-      await firstValueFrom(productFacade.isLoading$.pipe(filter((isLoading) => !isLoading)));
+      expect(productFacade.products().length).toBe(2);
 
-      let products = await firstValueFrom(productFacade.products$);
-
-      expect(products.length).toBe(2);
-
-      const productToAdd = products[0];
+      const productToAdd = productFacade.products()[0];
       const mockCartQuantity = 2;
       const mockCartItem = {
         product: productToAdd,
@@ -117,77 +112,66 @@ describe('Product Flow Integration Tests', () => {
       store.overrideSelector(selectSubtotal, productToAdd.price * mockCartQuantity);
       store.refreshState();
 
-      const items = await firstValueFrom(cartFacade.items$);
-      const subtotal = await firstValueFrom(cartFacade.subtotal$);
-
       // Assert
-      expect(items.length).toBe(1);
-      expect(items[0].product.id).toBe(productToAdd.id);
-      expect(items[0].quantity).toBe(2);
-      expect(subtotal).toBe(59.98);
+      expect(cartFacade.items().length).toBe(1);
+      expect(cartFacade.items()[0].product.id).toBe(productToAdd.id);
+      expect(cartFacade.items()[0].quantity).toBe(2);
+      expect(cartFacade.subtotal()).toBe(59.98);
     });
 
-    it('should filter products and add filtered item to cart', async () => {
+    it('should filter products and add filtered item to cart', () => {
       // Arrange
       productFacade.loadProducts();
 
-      let products = await firstValueFrom(productFacade.filteredProducts$);
-
-      expect(products.length).toBe(2);
+      expect(productFacade.filteredProducts().length).toBe(2);
 
       // Act - Filter by category
       productFacade.setFilters({ category: 'Electronics' });
 
       store.overrideSelector(selectFilteredProducts, [mockProducts[1]]);
+      store.refreshState();
 
-      const productsFiltered = await firstValueFrom(productFacade.filteredProducts$);
-
-      expect(productsFiltered.length).toBe(1);
-      expect(productsFiltered[0].category).toBe('Electronics');
+      expect(productFacade.filteredProducts().length).toBe(1);
+      expect(productFacade.filteredProducts()[0].category).toBe('Electronics');
 
       const mockCartQuantity = 1;
       const mockCartItem = {
-        product: productsFiltered[0],
+        product: productFacade.filteredProducts()[0],
         quantity: mockCartQuantity,
-        subtotal: productsFiltered[0].price * mockCartQuantity,
+        subtotal: productFacade.filteredProducts()[0].price * mockCartQuantity,
       };
 
       // Act - Add filtered product to cart
       store.overrideSelector(selectItems, [mockCartItem]);
-      store.overrideSelector(selectSubtotal, productsFiltered[0].price * mockCartQuantity);
+      store.overrideSelector(
+        selectSubtotal,
+        productFacade.filteredProducts()[0].price * mockCartQuantity,
+      );
       store.refreshState();
 
-      const items = await firstValueFrom(cartFacade.items$);
-      const subtotal = await firstValueFrom(cartFacade.subtotal$);
-      const hasFreeShipping = await firstValueFrom(cartFacade.hasFreeShipping$);
-
       // Assert
-      expect(items[0].product.name).toBe('Espresso Machine');
-      expect(subtotal).toBe(499.99);
-      expect(hasFreeShipping).toBe(true);
+      expect(cartFacade.items()[0].product.name).toBe('Espresso Machine');
+      expect(cartFacade.subtotal()).toBe(499.99);
+      expect(cartFacade.hasFreeShipping()).toBe(true);
     });
   });
 
   describe('Multiple Products in Cart', () => {
-    it('should handle multiple products with correct calculations', async () => {
+    it('should handle multiple products with correct calculations', () => {
       productFacade.loadProducts();
 
-      await firstValueFrom(productFacade.isLoading$.pipe(filter((isLoading) => !isLoading)));
-
-      let products = await firstValueFrom(productFacade.products$);
-
-      expect(products.length).toBe(2);
+      expect(productFacade.products().length).toBe(2);
 
       const mockCartItems = [
         {
-          product: products[0],
+          product: productFacade.products()[0],
           quantity: 2,
-          subtotal: products[0].price * 2,
+          subtotal: productFacade.products()[0].price * 2,
         },
         {
-          product: products[1],
+          product: productFacade.products()[1],
           quantity: 1,
-          subtotal: products[1].price * 1,
+          subtotal: productFacade.products()[1].price * 1,
         },
       ];
       store.overrideSelector(selectItems, [...mockCartItems]);
@@ -208,30 +192,22 @@ describe('Product Flow Integration Tests', () => {
       store.overrideSelector(selectShipping, 0);
       store.refreshState();
 
-      const { items$, itemCount$, subtotal$, tax$, shipping$, hasFreeShipping$ } = cartFacade;
-
-      const [items, itemCount, subtotal, tax, shipping, hasFreeShipping] = await firstValueFrom(
-        combineLatest([items$, itemCount$, subtotal$, tax$, shipping$, hasFreeShipping$]),
-      );
-
       // Assert
-      expect(items.length).toBe(2);
-      expect(itemCount).toBe(3);
-      expect(subtotal).toBeCloseTo(559.97, 2);
-      expect(tax).toBeCloseTo(55.997, 2);
-      expect(shipping).toBe(0); // Free shipping
-      expect(hasFreeShipping).toBe(true);
+      expect(cartFacade.items().length).toBe(2);
+      expect(cartFacade.itemCount()).toBe(3);
+      expect(cartFacade.subtotal()).toBeCloseTo(559.97, 2);
+      expect(cartFacade.tax()).toBeCloseTo(55.997, 2);
+      expect(cartFacade.shipping()).toBe(0); // Free shipping
+      expect(cartFacade.hasFreeShipping()).toBe(true);
     });
 
-    it('should update quantities and recalculate totals', async () => {
+    it('should update quantities and recalculate totals', () => {
       // Arrange
       productFacade.loadProducts();
 
-      let products = await firstValueFrom(productFacade.products$);
+      expect(productFacade.products().length).toBe(2);
 
-      expect(products.length).toBe(2);
-
-      const product = products[0];
+      const product = productFacade.products()[0];
       const mockCartItem = {
         product,
         quantity: 5,
@@ -243,74 +219,54 @@ describe('Product Flow Integration Tests', () => {
       store.overrideSelector(selectSubtotal, mockCartItem.subtotal);
       store.refreshState();
 
-      const { items$, subtotal$, hasFreeShipping$ } = cartFacade;
-
-      const [items, subtotal, hasFreeShipping] = await firstValueFrom(
-        combineLatest([items$, subtotal$, hasFreeShipping$]),
-      );
-
       // Assert
-      expect(items[0].quantity).toBe(5);
-      expect(subtotal).toBeCloseTo(149.95, 2);
-      expect(hasFreeShipping).toBe(true);
+      expect(cartFacade.items()[0].quantity).toBe(5);
+      expect(cartFacade.subtotal()).toBeCloseTo(149.95, 2);
+      expect(cartFacade.hasFreeShipping()).toBe(true);
     });
   });
 
   describe('Search and Purchase Flow', () => {
-    it('should search products and add to cart', async () => {
+    it('should search products and add to cart', () => {
       // Arrange
       productFacade.loadProducts();
 
-      let products = await firstValueFrom(productFacade.products$);
-
-      expect(products.length).toBe(2);
+      expect(productFacade.products().length).toBe(2);
 
       // Act - Search for coffee
       productFacade.setFilters({ search: 'coffee' });
 
       store.overrideSelector(selectFilteredProducts, [mockProducts[0]]);
 
-      const productsFiltered = await firstValueFrom(productFacade.filteredProducts$);
+      expect(productFacade.filteredProducts().length).toBe(1);
+      expect(productFacade.filteredProducts()[0].name).toContain('Coffee');
 
-      expect(productsFiltered.length).toBe(1);
-      expect(productsFiltered[0].name).toContain('Coffee');
-
+      // Act - Add to cart
       const mockCartItem = {
-        product: productsFiltered[0],
+        product: productFacade.filteredProducts()[0],
         quantity: 3,
-        subtotal: productsFiltered[0].price * 3,
+        subtotal: productFacade.filteredProducts()[0].price * 3,
       };
       store.overrideSelector(selectItems, [mockCartItem]);
       store.overrideSelector(selectItemCount, mockCartItem.quantity);
       store.refreshState();
 
-      // Act - Add to cart
-
-      const { items$, itemCount$ } = cartFacade;
-
-      const [items, itemCount] = await firstValueFrom(combineLatest([items$, itemCount$]));
-
       // Assert
-      expect(items.length).toBe(1);
-      expect(itemCount).toBe(3);
+      expect(cartFacade.items().length).toBe(1);
+      expect(cartFacade.itemCount()).toBe(3);
     });
   });
 
   describe('Cart Persistence', () => {
     it('should persist cart across page reloads', async () => {
       // Arrange
-      let products: IProduct[] = [];
       productFacade.loadProducts();
 
-      await vi.waitFor(() => {
-        productFacade.products$.subscribe((p) => {
-          products = p;
-          expect(p.length).toBe(2);
-        });
-      });
+      expect(productFacade.products().length).toBe(2);
 
       // Act - Add items to cart
-      const product = products[0];
+      const product = productFacade.products()[0];
+      await cartFacade.addItem(product, 2);
 
       await vi.waitFor(() => {
         const stored = localStorage.getItem('cart');
@@ -333,37 +289,31 @@ describe('Product Flow Integration Tests', () => {
       });
 
       const mockCartItem = {
-        product: products[0],
+        product: productFacade.products()[0],
         quantity: 2,
-        subtotal: products[0].price * 2,
+        subtotal: productFacade.products()[0].price * 2,
       };
       store.overrideSelector(selectItems, [mockCartItem]);
       store.refreshState();
 
       const newCartFacade = TestBed.inject(CartFacade);
 
-      const items = await firstValueFrom(newCartFacade.items$);
-
       // Assert - Cart should be restored
-      expect(items.length).toBe(1);
-      expect(items[0].quantity).toBe(2);
-      expect(items[0].product.id).toBe(product.id);
+      expect(newCartFacade.items().length).toBe(1);
+      expect(newCartFacade.items()[0].quantity).toBe(2);
+      expect(newCartFacade.items()[0].product.id).toBe(product.id);
     });
   });
 
   describe('Price Calculations', () => {
-    it('should calculate correct totals with tax and shipping', async () => {
+    it('should calculate correct totals with tax and shipping', () => {
       // Arrange
       productFacade.loadProducts();
 
-      await firstValueFrom(productFacade.isLoading$.pipe(filter((isLoading) => !isLoading)));
-
-      let products = await firstValueFrom(productFacade.products$);
-
-      expect(products.length).toBe(2);
+      expect(productFacade.products().length).toBe(2);
 
       // Act - Add cheap item (should have shipping cost)
-      const cheapProduct = products[0]; // 29.99
+      const cheapProduct = productFacade.products()[0]; // 29.99
       const mockCartItem = {
         product: cheapProduct,
         quantity: 1,
@@ -382,31 +332,21 @@ describe('Product Flow Integration Tests', () => {
       const expectedShipping = 10;
       const expectedTotal = expectedSubtotal + expectedTax + expectedShipping;
 
-      const { subtotal$, tax$, shipping$, total$, hasFreeShipping$ } = cartFacade;
-
-      const [subtotal, tax, shipping, total, hasFreeShipping] = await firstValueFrom(
-        combineLatest([subtotal$, tax$, shipping$, total$, hasFreeShipping$]),
-      );
-
-      expect(subtotal).toBeCloseTo(expectedSubtotal, 2);
-      expect(tax).toBeCloseTo(expectedTax, 2);
-      expect(shipping).toBe(expectedShipping);
-      expect(total).toBeCloseTo(expectedTotal, 2);
-      expect(hasFreeShipping).toBe(false);
+      expect(cartFacade.subtotal()).toBeCloseTo(expectedSubtotal, 2);
+      expect(cartFacade.tax()).toBeCloseTo(expectedTax, 2);
+      expect(cartFacade.shipping()).toBe(expectedShipping);
+      expect(cartFacade.total()).toBeCloseTo(expectedTotal, 2);
+      expect(cartFacade.hasFreeShipping()).toBe(false);
     });
 
-    it('should apply free shipping for orders over threshold', async () => {
+    it('should apply free shipping for orders over threshold', () => {
       // Arrange
       productFacade.loadProducts();
 
-      await firstValueFrom(productFacade.isLoading$.pipe(filter((isLoading) => !isLoading)));
-
-      let products = await firstValueFrom(productFacade.products$);
-
-      expect(products.length).toBe(2);
+      expect(productFacade.products().length).toBe(2);
 
       // Act - Add expensive item (should have free shipping)
-      const expensiveProduct = products[1]; // 499.99
+      const expensiveProduct = productFacade.products()[1]; // 499.99
       const mockCartItem = {
         product: expensiveProduct,
         quantity: 1,
@@ -425,58 +365,44 @@ describe('Product Flow Integration Tests', () => {
       const expectedShipping = 0; // Free
       const expectedTotal = expectedSubtotal + expectedTax + expectedShipping;
 
-      const { subtotal$, shipping$, total$, hasFreeShipping$ } = cartFacade;
-
-      const [subtotal, shipping, total, hasFreeShipping] = await firstValueFrom(
-        combineLatest([subtotal$, shipping$, total$, hasFreeShipping$]),
-      );
-
-      expect(subtotal).toBeCloseTo(expectedSubtotal, 2);
-      expect(shipping).toBe(expectedShipping);
-      expect(total).toBeCloseTo(expectedTotal, 2);
-      expect(hasFreeShipping).toBe(true);
+      expect(cartFacade.subtotal()).toBeCloseTo(expectedSubtotal, 2);
+      expect(cartFacade.shipping()).toBe(expectedShipping);
+      expect(cartFacade.total()).toBeCloseTo(expectedTotal, 2);
+      expect(cartFacade.hasFreeShipping()).toBe(true);
     });
   });
 
   describe('Remove from Cart', () => {
-    it('should remove item and recalculate totals', async () => {
+    it('should remove item and recalculate totals', () => {
       // Arrange
       productFacade.loadProducts();
 
-      await firstValueFrom(productFacade.isLoading$.pipe(filter((isLoading) => !isLoading)));
-
-      let products = await firstValueFrom(productFacade.products$);
-
-      expect(products.length).toBe(2);
+      expect(productFacade.products().length).toBe(2);
 
       const mockCartItems = [
         {
-          product: products[0],
+          product: productFacade.products()[0],
           quantity: 1,
-          subtotal: products[0].price * 1,
+          subtotal: productFacade.products()[0].price * 1,
         },
         {
-          product: products[1],
+          product: productFacade.products()[1],
           quantity: 1,
-          subtotal: products[1].price * 1,
+          subtotal: productFacade.products()[1].price * 1,
         },
       ];
       store.overrideSelector(selectItems, [...mockCartItems]);
       store.refreshState();
 
-      const items = await firstValueFrom(cartFacade.items$);
-
-      expect(items.length).toBe(2);
+      expect(cartFacade.items().length).toBe(2);
 
       // Act - Remove one item
       store.overrideSelector(selectItems, [mockCartItems[1]]);
       store.refreshState();
 
-      const currentItems = await firstValueFrom(cartFacade.items$);
-
       // Assert
-      expect(currentItems.length).toBe(1);
-      expect(currentItems[0].product.id).toBe(products[1].id);
+      expect(cartFacade.items().length).toBe(1);
+      expect(cartFacade.items()[0].product.id).toBe(productFacade.products()[1].id);
     });
   });
 });

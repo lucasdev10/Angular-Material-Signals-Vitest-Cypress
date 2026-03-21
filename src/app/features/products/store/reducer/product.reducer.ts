@@ -21,6 +21,7 @@ export const productReducer = createReducer(
   })),
   on(ProductActions.loadProductById, (state) => ({
     ...state,
+    selectedProduct: null,
     loading: 'loading' as const,
     error: null,
   })),

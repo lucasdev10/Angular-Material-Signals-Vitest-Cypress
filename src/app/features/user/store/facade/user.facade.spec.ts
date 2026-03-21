@@ -75,84 +75,44 @@ describe('UserFacade', () => {
   });
 
   describe('selectors', () => {
-    it('should expose users$', async () => {
-      await vi.waitFor(() => {
-        facade.users$.subscribe((users) => {
-          expect(users).toEqual(mockUsers);
-        });
-      });
+    it('should expose users$', () => {
+      expect(facade.users()).toEqual(mockUsers);
     });
 
-    it('should expose selectedUser$', async () => {
-      await vi.waitFor(() => {
-        facade.selectedUser$.subscribe((user) => {
-          expect(user).toBeNull();
-        });
-      });
+    it('should expose selectedUser$', () => {
+      expect(facade.selectedUser()).toBeNull();
     });
 
-    it('should expose isLoading$', async () => {
-      await vi.waitFor(() => {
-        facade.isLoading$.subscribe((isLoading) => {
-          expect(isLoading).toBe(false);
-        });
-      });
+    it('should expose isLoading$', () => {
+      expect(facade.isLoading()).toBe(false);
     });
 
-    it('should expose filters$', async () => {
-      await vi.waitFor(() => {
-        facade.filters$.subscribe((filters) => {
-          expect(filters).toEqual({});
-        });
-      });
+    it('should expose filters$', () => {
+      expect(facade.filters()).toEqual({});
     });
 
-    it('should expose loading$', async () => {
-      await vi.waitFor(() => {
-        facade.loading$.subscribe((loading) => {
-          expect(loading).toBe('success');
-        });
-      });
+    it('should expose loading$', () => {
+      expect(facade.loading()).toBe('success');
     });
 
-    it('should expose error$', async () => {
-      await vi.waitFor(() => {
-        facade.error$.subscribe((error) => {
-          expect(error).toBeNull();
-        });
-      });
+    it('should expose error$', () => {
+      expect(facade.error()).toBeNull();
     });
 
-    it('should expose hasError$', async () => {
-      await vi.waitFor(() => {
-        facade.hasError$.subscribe((hasError) => {
-          expect(hasError).toBe(false);
-        });
-      });
+    it('should expose hasError$', () => {
+      expect(facade.hasError()).toBe(false);
     });
 
-    it('should expose filteredUsers$', async () => {
-      await vi.waitFor(() => {
-        facade.filteredUsers$.subscribe((users) => {
-          expect(users).toEqual(mockUsers);
-        });
-      });
+    it('should expose filteredUsers$', () => {
+      expect(facade.filteredUsers()).toEqual(mockUsers);
     });
 
-    it('should expose userCount$', async () => {
-      await vi.waitFor(() => {
-        facade.userCount$.subscribe((count) => {
-          expect(count).toBe(2);
-        });
-      });
+    it('should expose userCount$', () => {
+      expect(facade.userCount()).toBe(2);
     });
 
-    it('should expose filteredUserCount$', async () => {
-      await vi.waitFor(() => {
-        facade.filteredUserCount$.subscribe((count) => {
-          expect(count).toBe(2);
-        });
-      });
+    it('should expose filteredUserCount$', () => {
+      expect(facade.filteredUserCount()).toBe(2);
     });
   });
 
@@ -233,25 +193,14 @@ describe('UserFacade', () => {
   });
 
   describe('integration', () => {
-    it('should update loading when selectors change', async () => {
-      let currentValue: boolean | undefined;
-      const subscription = facade.isLoading$.subscribe((isLoading) => {
-        currentValue = isLoading;
-      });
-
-      await vi.waitFor(() => {
-        expect(currentValue).toBe(false);
-      });
+    it('should update loading when selectors change', () => {
+      expect(facade.isLoading()).toBe(false);
 
       store.overrideSelector(selectIsLoading, true);
       store.overrideSelector(selectLoading, 'loading');
       store.refreshState();
 
-      await vi.waitFor(() => {
-        expect(currentValue).toBe(true);
-      });
-
-      subscription.unsubscribe();
+      expect(facade.isLoading()).toBe(true);
     });
   });
 });

@@ -5,7 +5,7 @@ import { ICreateProductDto, IProduct } from '@app/features/products/models/produ
 import { ProductRepository } from '@app/features/products/repositories/product.repository';
 import { initialProductState, ProductFacade, selectProducts } from '@app/features/products/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { filter, firstValueFrom, of } from 'rxjs';
+import { of } from 'rxjs';
 import { AdminProductsPageComponent } from './admin-products-page';
 
 describe('AdminProductsPageComponent', () => {
@@ -99,7 +99,7 @@ describe('AdminProductsPageComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should update the list after creating the product', async () => {
+  it('should update the list after creating the product', () => {
     const newProduct: IProduct = {
       ...mockNewProduct,
       id: 'new-product-id',
@@ -109,37 +109,29 @@ describe('AdminProductsPageComponent', () => {
     };
 
     store.overrideSelector(selectProducts, [...mockProducts, newProduct]);
+    store.refreshState();
 
     productFacade.createProduct(mockNewProduct);
 
-    // espera o loading terminar
-    await firstValueFrom(productFacade.isLoading$.pipe(filter((isLoading) => !isLoading)));
-
-    // agora verifica se o produto está na lista
-    const products = await firstValueFrom(productFacade.products$);
-    const hasProduct = products.some((p) => p.name === mockNewProduct.name);
+    const hasProduct = productFacade.products().some((p) => p.name === mockNewProduct.name);
 
     expect(hasProduct).toBe(true);
   });
 
-  it('should remove the product from the list after deleting it', async () => {
-    let products = await firstValueFrom(productFacade.products$);
-    let productId = products[0].id;
+  it('should remove the product from the list after deleting it', () => {
+    let productId = productFacade.products()[0].id;
 
-    expect(products.length).toBeGreaterThan(0);
+    expect(productFacade.products().length).toBeGreaterThan(0);
 
     vi.spyOn(repository, 'delete').mockReturnValue(of(undefined));
 
     const updatedProducts = mockProducts.filter((p) => p.id !== productId);
     store.overrideSelector(selectProducts, updatedProducts);
+    store.refreshState();
 
     productFacade.deleteProduct(productId);
 
-    await firstValueFrom(productFacade.isLoading$.pipe(filter((isLoading) => !isLoading)));
-
-    products = await firstValueFrom(productFacade.products$);
-
-    expect(products.find((p) => p.id === productId)).toBeUndefined();
+    expect(productFacade.products().find((p) => p.id === productId)).toBeUndefined();
   });
 
   it('should navigate to edit page when onEdit is called', () => {

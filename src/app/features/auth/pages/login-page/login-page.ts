@@ -1,4 +1,3 @@
-import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { email, form, FormField, minLength, required } from '@angular/forms/signals';
@@ -10,7 +9,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
 import { FormError } from '@app/shared';
-import { firstValueFrom } from 'rxjs';
 import { AuthFacade } from '../../store';
 
 @Component({
@@ -26,7 +24,6 @@ import { AuthFacade } from '../../store';
     FormError,
     FormField,
     RouterLink,
-    AsyncPipe,
   ],
   templateUrl: './login-page.html',
   styleUrl: './login-page.scss',
@@ -36,8 +33,8 @@ import { AuthFacade } from '../../store';
 export class LoginPageComponent {
   private readonly authFacade = inject(AuthFacade);
 
-  readonly isLoading$ = this.authFacade.isLoading$;
-  readonly error$ = this.authFacade.error$;
+  readonly isLoading = this.authFacade.isLoading;
+  readonly error = this.authFacade.error;
   readonly hidePassword = signal(true);
 
   readonly loginForm = form(
@@ -53,9 +50,7 @@ export class LoginPageComponent {
     },
   );
 
-  readonly canSubmit = computed(
-    async () => this.loginForm().valid() && !(await firstValueFrom(this.isLoading$)),
-  );
+  readonly canSubmit = computed(async () => this.loginForm().valid() && !this.isLoading());
 
   onSubmit(): void {
     if (this.loginForm().invalid()) {

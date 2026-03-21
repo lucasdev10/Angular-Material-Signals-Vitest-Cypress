@@ -3,10 +3,11 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
+  Injector,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { email, form, FormField, minLength, required } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -16,7 +17,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ILoginCredentials } from '@app/features/auth/models/auth.model';
 import { AuthFacade } from '@app/features/auth/store';
 import { FormError } from '@app/shared';
 import { EUserRole, ICreateUserDto } from '../../models/user.model';
@@ -45,6 +45,7 @@ export class UserFormPageComponent {
   private readonly router = inject(Router);
   private readonly authFacade = inject(AuthFacade);
   private readonly userFacade = inject(UserFacade);
+  private readonly injector = inject(Injector);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly isLoading = signal<boolean>(false);
@@ -68,8 +69,24 @@ export class UserFormPageComponent {
     minLength(fieldPath.password, 6, { message: 'Minimum of 6 characters' });
   });
 
+  private readonly syncedUser = computed(() => {
+    const isLoading = this.userFacade.isLoading();
+    const user = this.userFacade.selectedUser();
+    const inEditMode = this.isEditMode();
+
+    if (!isLoading && user && inEditMode) {
+      return { ...(user as ICreateUserDto) };
+    }
+
+    return null;
+  });
+
+  protected readonly canSubmit = computed(() => this.userForm().valid() && !this.isLoading());
+
   constructor() {
     this.initializeForm();
+    this.setupUserSync();
+    this.setupErrorHandling();
   }
 
   private initializeForm(): void {
@@ -82,30 +99,44 @@ export class UserFormPageComponent {
     }
   }
 
+  private setupUserSync(): void {
+    effect(
+      () => {
+        const synced = this.syncedUser();
+
+        if (synced) {
+          this.userModel.set(synced);
+          this.isLoading.set(false);
+        }
+      },
+      {
+        injector: this.injector,
+      },
+    );
+  }
+
+  private setupErrorHandling(): void {
+    effect(
+      () => {
+        const error = this.userFacade.error?.();
+        const isLoading = this.userFacade.isLoading();
+
+        if (error && !isLoading && this.isEditMode()) {
+          console.error('Erro ao carregar usuário:', error);
+        }
+      },
+      { injector: this.injector },
+    );
+  }
+
   private loadUser(id: string): void {
     this.isLoading.set(true);
     this.userFacade.loadUserById(id);
-
-    this.userFacade.userWithLoading$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ user, isLoading }) => {
-        if (isLoading) {
-          return;
-        }
-
-        this.isLoading.set(false);
-
-        if (user) {
-          this.userModel.set({ ...(user as ICreateUserDto) });
-        }
-      });
   }
 
   protected togglePasswordVisibility(): void {
     this.hidePassword.update((value) => !value);
   }
-
-  protected readonly canSubmit = computed(() => this.userForm().valid() && !this.isLoading());
 
   protected onSubmit(): void {
     if (this.userForm().invalid()) {
@@ -119,18 +150,8 @@ export class UserFormPageComponent {
     if (this.isEditMode() && this.userId()) {
       this.userFacade.updateUser(this.userId()!, formValue);
     } else {
-      const newUser: ICreateUserDto = formValue;
-      this.userFacade.createUser(newUser);
+      this.userFacade.createUser(formValue);
     }
-
-    if (!this.isEditMode()) {
-      this.authFacade.login({ ...(formValue as ILoginCredentials) });
-    }
-
-    // Aguarda um pouco para simular salvamento
-    setTimeout(() => {
-      this.isLoading.set(false);
-    }, 1000);
   }
 
   protected onCancel(): void {

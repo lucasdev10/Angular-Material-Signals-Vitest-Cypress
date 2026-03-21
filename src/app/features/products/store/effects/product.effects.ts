@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap } from 'rxjs';
 import { ProductRepository } from '../../repositories/product.repository';
@@ -8,6 +9,7 @@ import { ProductActions } from '../product.actions';
 export class ProductEffects {
   private readonly actions$ = inject(Actions);
   private readonly repository = inject(ProductRepository);
+  private readonly router = inject(Router);
 
   loadProducts$ = createEffect(() =>
     this.actions$.pipe(
@@ -50,7 +52,10 @@ export class ProductEffects {
       ofType(ProductActions.createProduct),
       switchMap(({ product }) =>
         this.repository.create(product).pipe(
-          map((newProduct) => ProductActions.createProductSuccess({ product: newProduct })),
+          map((newProduct) => {
+            this.router.navigateByUrl('/admin/products');
+            return ProductActions.createProductSuccess({ product: newProduct });
+          }),
           catchError((error) =>
             of(
               ProductActions.createProductError({
@@ -68,7 +73,10 @@ export class ProductEffects {
       ofType(ProductActions.updateProduct),
       switchMap(({ id, product }) =>
         this.repository.update(id, product).pipe(
-          map((newProduct) => ProductActions.updateProductSuccess({ product: newProduct })),
+          map((newProduct) => {
+            this.router.navigateByUrl('/admin/products');
+            return ProductActions.updateProductSuccess({ product: newProduct });
+          }),
           catchError((error) =>
             of(
               ProductActions.updateProductError({

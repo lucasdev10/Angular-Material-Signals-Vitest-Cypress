@@ -1,6 +1,5 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, map } from 'rxjs';
 import { ICreateProductDto, IProductFilters, IUpdateProductDto } from '../../models/product.model';
 import { ProductActions } from '../product.actions';
 import {
@@ -18,17 +17,14 @@ import {
 export class ProductFacade {
   private readonly store = inject(Store);
 
-  readonly products$ = this.store.select(selectProducts);
-  readonly filteredProducts$ = this.store.select(selectFilteredProducts);
-  readonly isLoading$ = this.store.select(selectIsLoading);
-  readonly error$ = this.store.select(selectError);
-  readonly selectedProduct$ = this.store.select(selectSelectedProduct);
-  readonly totalProducts$ = this.store.select(selectTotalProducts);
-  readonly totalValue$ = this.store.select(selectTotalValue);
-  readonly lowStockProducts$ = this.store.select(selectLowStockProducts);
-  readonly productWithLoading$ = combineLatest([this.selectedProduct$, this.isLoading$]).pipe(
-    map(([product, isLoading]) => ({ product, isLoading })),
-  );
+  readonly products = this.store.selectSignal(selectProducts);
+  readonly filteredProducts = this.store.selectSignal(selectFilteredProducts);
+  readonly isLoading = this.store.selectSignal(selectIsLoading);
+  readonly error = this.store.selectSignal(selectError);
+  readonly selectedProduct = this.store.selectSignal(selectSelectedProduct);
+  readonly totalProducts = this.store.selectSignal(selectTotalProducts);
+  readonly totalValue = this.store.selectSignal(selectTotalValue);
+  readonly lowStockProducts = this.store.selectSignal(selectLowStockProducts);
 
   loadProducts(): void {
     this.store.dispatch(ProductActions.loadProducts());

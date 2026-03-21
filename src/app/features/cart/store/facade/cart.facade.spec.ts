@@ -96,60 +96,32 @@ describe('Cart Facade', () => {
   });
 
   describe('selectors', () => {
-    it('should expose products$', async () => {
-      await vi.waitFor(() => {
-        facade.items$.subscribe((items) => {
-          expect(items).toEqual(mockCartItems);
-        });
-      });
+    it('should expose products$', () => {
+      expect(facade.items()).toEqual(mockCartItems);
     });
 
-    it('should expose subtotal$', async () => {
-      await vi.waitFor(() => {
-        facade.subtotal$.subscribe((subtotal) => {
-          expect(subtotal).toBe(560);
-        });
-      });
+    it('should expose subtotal$', () => {
+      expect(facade.subtotal()).toBe(560);
     });
 
-    it('should expose shipping$', async () => {
-      await vi.waitFor(() => {
-        facade.shipping$.subscribe((shipping) => {
-          expect(shipping).toBe(0);
-        });
-      });
+    it('should expose shipping$', () => {
+      expect(facade.shipping()).toBe(0);
     });
 
-    it('should expose tax$', async () => {
-      await vi.waitFor(() => {
-        facade.tax$.subscribe((tax) => {
-          expect(tax).toBe(0.1);
-        });
-      });
+    it('should expose tax$', () => {
+      expect(facade.tax()).toBe(0.1);
     });
 
-    it('should expose total$', async () => {
-      await vi.waitFor(() => {
-        facade.total$.subscribe((total) => {
-          expect(total).toBe(616.0);
-        });
-      });
+    it('should expose total$', () => {
+      expect(facade.total()).toBe(616.0);
     });
 
-    it('should expose itemCount$', async () => {
-      await vi.waitFor(() => {
-        facade.itemCount$.subscribe((itemCount) => {
-          expect(itemCount).toBe(3);
-        });
-      });
+    it('should expose itemCount$', () => {
+      expect(facade.itemCount()).toBe(3);
     });
 
-    it('should expose isEmpty$', async () => {
-      await vi.waitFor(() => {
-        facade.isEmpty$.subscribe((isEmpty) => {
-          expect(isEmpty).toBe(false);
-        });
-      });
+    it('should expose isEmpty$', () => {
+      expect(facade.isEmpty()).toBe(false);
     });
   });
 

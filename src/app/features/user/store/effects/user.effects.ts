@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { AuthFacade } from '@app/features/auth/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -13,6 +14,7 @@ import { UserActions } from '../user.actions';
 export class UserEffects {
   private readonly actions$ = inject(Actions);
   private readonly repository = inject(UserRepository);
+  private readonly authFacade = inject(AuthFacade);
 
   /**
    * Effect: Load Users
@@ -56,7 +58,10 @@ export class UserEffects {
       ofType(UserActions.createUser),
       switchMap(({ dto }) =>
         this.repository.create(dto).pipe(
-          map((user) => UserActions.createUserSuccess({ user })),
+          map((user) => {
+            this.authFacade.login({ email: user.email, password: dto.password });
+            return UserActions.createUserSuccess({ user });
+          }),
           catchError((error) =>
             of(UserActions.createUserFailure({ error: error.message || 'Failed to create user' })),
           ),

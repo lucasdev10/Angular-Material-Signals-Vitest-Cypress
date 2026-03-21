@@ -57,51 +57,27 @@ describe('AuthFacade', () => {
 
   describe('selectors', () => {
     it('should expose isLoading$', async () => {
-      await vi.waitFor(() => {
-        facade.isLoading$.subscribe((isLoading) => {
-          expect(isLoading).toBe(false);
-        });
-      });
+      expect(facade.isLoading()).toBe(false);
     });
 
     it('should expose error$', async () => {
-      await vi.waitFor(() => {
-        facade.error$.subscribe((error) => {
-          expect(error).toBe(null);
-        });
-      });
+      expect(facade.error()).toBe(null);
     });
 
     it('should expose isAuthenticated$', async () => {
-      await vi.waitFor(() => {
-        facade.isAuthenticated$.subscribe((isAuthenticated) => {
-          expect(isAuthenticated).toBe(true);
-        });
-      });
+      expect(facade.isAuthenticated()).toBe(true);
     });
 
     it('should expose isAdmin$', async () => {
-      await vi.waitFor(() => {
-        facade.isAdmin$.subscribe((isAdmin) => {
-          expect(isAdmin).toBe(true);
-        });
-      });
+      expect(facade.isAdmin()).toBe(true);
     });
 
     it('should expose user$', async () => {
-      await vi.waitFor(() => {
-        facade.user$.subscribe((user) => {
-          expect(user).toEqual(mockUser);
-        });
-      });
+      expect(facade.user()).toEqual(mockUser);
     });
 
     it('should expose token$', async () => {
-      await vi.waitFor(() => {
-        facade.token$.subscribe((token) => {
-          expect(token).toEqual('user-token');
-        });
-      });
+      expect(facade.token()).toEqual('user-token');
     });
   });
 
@@ -150,24 +126,13 @@ describe('AuthFacade', () => {
   });
 
   describe('integration', () => {
-    it('should update loading when selectors change', async () => {
-      let currentValue: boolean | undefined;
-      const subscription = facade.isLoading$.subscribe((isLoading) => {
-        currentValue = isLoading;
-      });
-
-      await vi.waitFor(() => {
-        expect(currentValue).toBe(false);
-      });
+    it('should update loading when selectors change', () => {
+      expect(facade.isLoading()).toBe(false);
 
       store.overrideSelector(selectIsLoading, true);
       store.refreshState();
 
-      await vi.waitFor(() => {
-        expect(currentValue).toBe(true);
-      });
-
-      subscription.unsubscribe();
+      expect(facade.isLoading()).toBe(true);
     });
   });
 });

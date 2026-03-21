@@ -1,5 +1,5 @@
 <div class="cart-container" role="region" aria-label="Shopping cart">
-  @if ((isEmpty$ | async) === false) {
+  @if (isEmpty() === false) {
     <div class="cart-header">
       <h1 class="cart-title" id="cart-heading">
         <mat-icon class="title-icon" aria-hidden="true">shopping_cart</mat-icon>
@@ -9,16 +9,16 @@
         class="items-count"
         role="status"
         aria-live="polite"
-        [attr.aria-label]="(itemCount$ | async) + ' items in cart'"
+        [attr.aria-label]="itemCount() + ' items in cart'"
       >
-        {{ itemCount$ | async }} {{ (itemCount$ | async) === 1 ? 'item' : 'items' }}
+        {{ itemCount() }} {{ itemCount() === 1 ? 'item' : 'items' }}
       </span>
     </div>
 
     <div class="cart-content">
       <!-- Lista de produtos -->
       <div class="cart-items" role="list" aria-labelledby="cart-heading">
-        @for (item of items$ | async; track item.product.id) {
+        @for (item of items(); track item.product.id) {
           <mat-card
             class="cart-item"
             appearance="outlined"
@@ -146,28 +146,28 @@
             <div class="summary-section" role="list" aria-labelledby="summary-heading">
               <div class="summary-row" role="listitem">
                 <span class="summary-label" id="subtotal-label"
-                  >Subtotal ({{ itemCount$ | async }} items)</span
+                  >Subtotal ({{ itemCount() }} items)</span
                 >
                 <span class="summary-amount subtotal-value" aria-labelledby="subtotal-label">{{
-                  subtotal$ | async | currency
+                  subtotal() | currency
                 }}</span>
               </div>
               <div class="summary-row" role="listitem">
                 <span class="summary-label" id="shipping-label">Shipping</span>
-                @if (hasFreeShipping$ | async) {
+                @if (hasFreeShipping()) {
                   <span class="summary-amount shipping-badge" aria-labelledby="shipping-label"
                     >Free</span
                   >
                 } @else {
                   <span class="summary-amount shipping-value" aria-labelledby="shipping-label">{{
-                    shipping$ | async | currency
+                    shipping() | currency
                   }}</span>
                 }
               </div>
               <div class="summary-row" role="listitem">
                 <span class="summary-label" id="tax-label">Tax (10%)</span>
                 <span class="summary-amount tax-value" aria-labelledby="tax-label">{{
-                  tax$ | async | currency
+                  tax() | currency
                 }}</span>
               </div>
             </div>
@@ -180,19 +180,16 @@
                 <span class="total-currency" aria-hidden="true">USD</span>
                 <span
                   class="total-amount"
-                  [attr.aria-label]="'Total amount: ' + (total$ | async | currency)"
-                  >{{ total$ | async | currency }}</span
+                  [attr.aria-label]="'Total amount: ' + (total() | currency)"
+                  >{{ total() | currency }}</span
                 >
               </div>
             </div>
 
-            @if ((hasFreeShipping$ | async) === false) {
+            @if (hasFreeShipping() === false) {
               <div class="free-shipping-notice" role="status" aria-live="polite">
                 <mat-icon aria-hidden="true">local_shipping</mat-icon>
-                <span
-                  >Add {{ 100 - ((subtotal$ | async) || 0) | currency }} more for free
-                  shipping!</span
-                >
+                <span>Add {{ 100 - (subtotal() || 0) | currency }} more for free shipping!</span>
               </div>
             }
           </mat-card-content>
@@ -203,7 +200,7 @@
               color="primary"
               class="checkout-button"
               (click)="onCheckout()"
-              [disabled]="isEmpty$ | async"
+              [disabled]="isEmpty()"
               aria-label="Proceed to secure checkout"
               tabindex="0"
             >

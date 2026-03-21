@@ -1,27 +1,27 @@
 <div class="product-list-container" role="region" aria-label="Product catalog">
   <h1 class="page-title" id="products-heading">Our Products</h1>
 
-  @if (isLoading$ | async) {
+  @if (isLoading()) {
     <div class="loading-container" role="status" aria-live="polite" aria-busy="true">
       <mat-spinner aria-label="Loading products"></mat-spinner>
       <p>Loading products...</p>
     </div>
   }
 
-  @if (error$ | async) {
+  @if (error()) {
     <div class="error-container" role="alert" aria-live="assertive">
-      <p class="error-message">{{ error$ | async }}</p>
+      <p class="error-message">{{ error() }}</p>
     </div>
   }
 
-  @if ((isLoading$ | async) === false && (error$ | async) === null) {
+  @if (isLoading() === false && error() === null) {
     <div
       class="products-grid"
       role="list"
       aria-labelledby="products-heading"
-      [attr.aria-label]="(products$ | async)?.length + ' products available'"
+      [attr.aria-label]="products().length + ' products available'"
     >
-      @for (product of products$ | async; track product.id) {
+      @for (product of products(); track product.id) {
         <app-product-card [product]="product" (addToCart)="onAddToCart($event)" role="listitem" />
       } @empty {
         <div class="empty-state" role="status">

@@ -78,77 +78,36 @@ describe('ProductFacade', () => {
   });
 
   describe('selectors', () => {
-    it('should expose products$', async () => {
-      await vi.waitFor(() => {
-        facade.products$.subscribe((products) => {
-          expect(products).toEqual(mockProducts);
-        });
-      });
+    it('should expose products$', () => {
+      expect(facade.products()).toEqual(mockProducts);
     });
 
-    it('should expose filteredProducts$', async () => {
-      await vi.waitFor(() => {
-        facade.filteredProducts$.subscribe((filteredProducts) => {
-          expect(filteredProducts).toEqual(mockProducts);
-        });
-      });
+    it('should expose filteredProducts$', () => {
+      expect(facade.filteredProducts()).toEqual(mockProducts);
     });
 
-    it('should expose isLoading$', async () => {
-      await vi.waitFor(() => {
-        facade.isLoading$.subscribe((isLoading) => {
-          expect(isLoading).toBeFalsy();
-        });
-      });
+    it('should expose isLoading$', () => {
+      expect(facade.isLoading()).toBeFalsy();
     });
 
-    it('should expose error$', async () => {
-      await vi.waitFor(() => {
-        facade.error$.subscribe((error) => {
-          expect(error).toBeNull();
-        });
-      });
+    it('should expose error$', () => {
+      expect(facade.error()).toBeNull();
     });
 
-    it('should expose selectedProduct$', async () => {
-      await vi.waitFor(() => {
-        facade.selectedProduct$.subscribe((selectedProduct) => {
-          expect(selectedProduct).toBeNull();
-        });
-      });
+    it('should expose selectedProduct$', () => {
+      expect(facade.selectedProduct()).toBeNull();
     });
 
-    it('should expose totalProducts$', async () => {
-      await vi.waitFor(() => {
-        facade.totalProducts$.subscribe((totalProducts) => {
-          expect(totalProducts).toBe(2);
-        });
-      });
+    it('should expose totalProducts$', () => {
+      expect(facade.totalProducts()).toBe(2);
     });
 
-    it('should expose totalValue$', async () => {
-      await vi.waitFor(() => {
-        facade.totalValue$.subscribe((totalValue) => {
-          expect(totalValue).toBe(529.98);
-        });
-      });
+    it('should expose totalValue$', () => {
+      expect(facade.totalValue()).toBe(529.98);
     });
 
-    it('should expose lowStockProducts$', async () => {
-      await vi.waitFor(() => {
-        facade.lowStockProducts$.subscribe((lowStockProducts) => {
-          expect(lowStockProducts).toBe(0);
-        });
-      });
-    });
-
-    it('should expose productWithLoading$', async () => {
-      await vi.waitFor(() => {
-        facade.productWithLoading$.subscribe(({ product, isLoading }) => {
-          expect(product).toBeNull();
-          expect(isLoading).toBeFalsy();
-        });
-      });
+    it('should expose lowStockProducts$', () => {
+      expect(facade.lowStockProducts()).toBe(0);
     });
   });
 
@@ -227,25 +186,14 @@ describe('ProductFacade', () => {
   });
 
   describe('integration', () => {
-    it('should update loading when selectors change', async () => {
-      let currentValue: boolean | undefined;
-      const subscription = facade.isLoading$.subscribe((isLoading) => {
-        currentValue = isLoading;
-      });
-
-      await vi.waitFor(() => {
-        expect(currentValue).toBe(false);
-      });
+    it('should update loading when selectors change', () => {
+      expect(facade.isLoading()).toBe(false);
 
       store.overrideSelector(selectIsLoading, true);
       store.overrideSelector(selectLoading, 'loading');
       store.refreshState();
 
-      await vi.waitFor(() => {
-        expect(currentValue).toBe(true);
-      });
-
-      subscription.unsubscribe();
+      expect(facade.isLoading()).toBe(true);
     });
   });
 });

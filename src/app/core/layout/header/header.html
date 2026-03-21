@@ -12,7 +12,7 @@
           >Products</a
         >
       </li>
-      @if (isAdmin$ | async) {
+      @if (isAdmin()) {
         <li role="none">
           <a
             [routerLink]="['/admin']"
@@ -30,21 +30,21 @@
     <button
       class="shopping-cart-button"
       mat-icon-button
-      [attr.aria-label]="'Shopping cart with ' + (cartItemCount$ | async) + ' items'"
+      [attr.aria-label]="'Shopping cart with ' + cartItemCount() + ' items'"
       [routerLink]="['/cart']"
-      [matBadge]="cartItemCount$ | async"
-      [matBadgeHidden]="(cartItemCount$ | async) === 0"
+      [matBadge]="cartItemCount()"
+      [matBadgeHidden]="cartItemCount() === 0"
       matBadgeColor="warn"
       tabindex="0"
     >
       <mat-icon aria-hidden="true">shopping_cart</mat-icon>
     </button>
 
-    @if (isAuthenticated$ | async) {
+    @if (isAuthenticated()) {
       <button
         mat-icon-button
         [matMenuTriggerFor]="userMenu"
-        [attr.aria-label]="'User menu for ' + (user$ | async)?.fullName"
+        [attr.aria-label]="'User menu for ' + user()?.fullName"
         aria-haspopup="true"
         tabindex="0"
       >
@@ -52,11 +52,11 @@
       </button>
       <mat-menu #userMenu="matMenu" role="menu">
         <div class="user-info" role="presentation">
-          <strong aria-label="User name">{{ (user$ | async)?.fullName }}</strong>
-          <small aria-label="User email">{{ (user$ | async)?.email }}</small>
+          <strong aria-label="User name">{{ user()?.fullName }}</strong>
+          <small aria-label="User email">{{ user()?.email }}</small>
         </div>
         <mat-divider role="separator"></mat-divider>
-        @if (isAdmin$ | async) {
+        @if (isAdmin()) {
           <button mat-menu-item [routerLink]="['/admin']" role="menuitem" tabindex="0">
             <mat-icon aria-hidden="true">dashboard</mat-icon>
             <span>Dashboard</span>

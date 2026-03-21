@@ -19,16 +19,16 @@
     </button>
   </div>
 
-  @if (isLoading$ | async) {
+  @if (isLoading()) {
     <div class="loading-container" role="status" aria-live="polite" aria-busy="true">
       <mat-spinner aria-label="Loading products"></mat-spinner>
       <p>Loading products...</p>
     </div>
-  } @else if (error$ | async) {
+  } @else if (error()) {
     <mat-card class="error-card" role="alert" aria-live="assertive">
       <mat-card-content>
         <mat-icon aria-hidden="true">error</mat-icon>
-        <p>{{ error$ | async }}</p>
+        <p>{{ error() }}</p>
         <button
           mat-raised-button
           color="primary"
@@ -40,7 +40,7 @@
         </button>
       </mat-card-content>
     </mat-card>
-  } @else if ((products$ | async)?.length === 0) {
+  } @else if (products().length === 0) {
     <mat-card class="empty-state" role="status">
       <mat-card-content>
         <mat-icon aria-hidden="true">inventory_2</mat-icon>
@@ -60,7 +60,7 @@
     </mat-card>
   } @else {
     <mat-card role="table" aria-labelledby="admin-heading">
-      <table mat-table [dataSource]="(products$ | async) || []" class="products-table">
+      <table mat-table [dataSource]="products() || []" class="products-table">
         <!-- Image Column -->
         <ng-container matColumnDef="image">
           <th mat-header-cell *matHeaderCellDef scope="col">Image</th>

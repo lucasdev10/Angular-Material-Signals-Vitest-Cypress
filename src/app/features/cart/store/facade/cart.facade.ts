@@ -1,11 +1,9 @@
-import { DestroyRef, inject, Injectable } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { computed, DestroyRef, effect, inject, Injectable, Injector } from '@angular/core';
 import { StorageService } from '@app/core/storage/storage';
 import { CartDomainService } from '@app/domain/cart/cart-domain.service';
 import { IProduct } from '@app/features/products/models/product.model';
 import { APP_CONFIG } from '@app/shared/config/app.config';
 import { Store } from '@ngrx/store';
-import { firstValueFrom, map } from 'rxjs';
 import { ICart, ICartItem } from '../../models/cart.model';
 import { CartActions } from '../cart.actions';
 import {
@@ -26,18 +24,19 @@ export class CartFacade {
   private readonly storageService = inject(StorageService<ICart>);
   private readonly STORAGE_KEY = APP_CONFIG.storage.CART_KEY;
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
 
-  private readonly state$ = this.store.select(selectState);
+  private readonly state = this.store.selectSignal(selectState);
 
-  readonly items$ = this.store.select(selectItems);
-  readonly subtotal$ = this.store.select(selectSubtotal);
-  readonly shipping$ = this.store.select(selectShipping);
-  readonly tax$ = this.store.select(selectTax);
-  readonly total$ = this.store.select(selectTotal);
-  readonly itemCount$ = this.store.select(selectItemCount);
-  readonly isEmpty$ = this.store.select(selectIsEmpty);
-  readonly hasFreeShipping$ = this.subtotal$.pipe(
-    map((subtotal) => this.cartDomainService.qualifiesForFreeShipping(subtotal)),
+  readonly items = this.store.selectSignal(selectItems);
+  readonly subtotal = this.store.selectSignal(selectSubtotal);
+  readonly shipping = this.store.selectSignal(selectShipping);
+  readonly tax = this.store.selectSignal(selectTax);
+  readonly total = this.store.selectSignal(selectTotal);
+  readonly itemCount = this.store.selectSignal(selectItemCount);
+  readonly isEmpty = this.store.selectSignal(selectIsEmpty);
+  readonly hasFreeShipping = computed(() =>
+    this.cartDomainService.qualifiesForFreeShipping(this.subtotal()),
   );
 
   constructor() {
@@ -47,13 +46,20 @@ export class CartFacade {
   loadInit(): void {
     this.store.dispatch(CartActions.loadCartFromStorage({ cart: this.loadFromStorage() }));
 
-    this.state$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((cart) => {
-      this.storageService.set(this.STORAGE_KEY, cart);
-    });
+    effect(
+      () => {
+        const state = this.state();
+
+        if (state) {
+          this.storageService.set(this.STORAGE_KEY, state);
+        }
+      },
+      { injector: this.injector },
+    );
   }
 
   async addItem(product: IProduct, quantity = 1): Promise<void> {
-    const currentItems = await firstValueFrom(this.items$);
+    const currentItems = this.items();
 
     const validationResult = this.canAddProduct(product.id, quantity, currentItems, product.stock);
 
@@ -95,7 +101,7 @@ export class CartFacade {
       throw new Error('Product ID is required');
     }
 
-    const items = await firstValueFrom(this.items$);
+    const items = this.items();
     const updatedItems = items.filter((item) => item.product.id !== productId);
     this.updateCart(updatedItems);
   }
@@ -110,7 +116,7 @@ export class CartFacade {
       return;
     }
 
-    const currentItems = await firstValueFrom(this.items$);
+    const currentItems = this.items();
     const existingItem = currentItems.find((item) => item.product.id === productId);
 
     if (!existingItem) {
@@ -144,7 +150,7 @@ export class CartFacade {
   }
 
   async incrementQuantity(productId: string): Promise<void> {
-    const items = await firstValueFrom(this.items$);
+    const items = this.items();
     const item = items.find((i) => i.product.id === productId);
     if (item) {
       this.updateQuantity(productId, item.quantity + 1);
@@ -152,7 +158,7 @@ export class CartFacade {
   }
 
   async decrementQuantity(productId: string): Promise<void> {
-    const items = await firstValueFrom(this.items$);
+    const items = this.items();
     const item = items.find((i) => i.product.id === productId);
     if (item) {
       this.updateQuantity(productId, item.quantity - 1);

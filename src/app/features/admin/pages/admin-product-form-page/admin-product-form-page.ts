@@ -3,10 +3,11 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
+  Injector,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import { form, FormField, min, minLength, required } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,6 +45,7 @@ export class AdminProductFormPageComponent {
   private readonly productFacade = inject(ProductFacade);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly injector = inject(Injector);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly isLoading = signal(false);
@@ -68,16 +70,30 @@ export class AdminProductFormPageComponent {
     minLength(fieldPath.description, 10, { message: 'Minimum of 10 characters' });
     required(fieldPath.category, { message: 'Field required' });
     required(fieldPath.price, { message: 'Field required' });
-    min(fieldPath.price, 0.1, { message: 'Minimum of 00.1' });
+    min(fieldPath.price, 0.1, { message: 'Minimum of 0.1' });
     required(fieldPath.stock, { message: 'Field required' });
     min(fieldPath.stock, 0, { message: 'Minimum of 0' });
     required(fieldPath.image, { message: 'Field required' });
+  });
+
+  private readonly syncedProduct = computed(() => {
+    const isLoading = this.productFacade.isLoading();
+    const product = this.productFacade.selectedProduct();
+    const inEditMode = this.isEditMode();
+
+    if (!isLoading && product && inEditMode) {
+      return { ...(product as ICreateProductDto) };
+    }
+
+    return null;
   });
 
   readonly canSubmit = computed(() => this.productForm().valid() && !this.isLoading());
 
   constructor() {
     this.initializeForm();
+    this.setupProductSync();
+    this.setupErrorHandling();
   }
 
   private initializeForm(): void {
@@ -90,25 +106,40 @@ export class AdminProductFormPageComponent {
     }
   }
 
+  private setupProductSync(): void {
+    effect(
+      () => {
+        const synced = this.syncedProduct();
+
+        if (synced) {
+          this.productModel.set(synced);
+          this.isLoading.set(false);
+        }
+      },
+      {
+        injector: this.injector,
+      },
+    );
+  }
+
+  private setupErrorHandling(): void {
+    effect(
+      () => {
+        const error = this.productFacade.error?.();
+        const isLoading = this.productFacade.isLoading();
+
+        if (error && !isLoading && this.isEditMode()) {
+          console.error('Erro ao carregar produto:', error);
+          this.router.navigate(['/admin/products']);
+        }
+      },
+      { injector: this.injector },
+    );
+  }
+
   private loadProduct(id: string): void {
     this.isLoading.set(true);
     this.productFacade.loadProductById(id);
-
-    this.productFacade.productWithLoading$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ product, isLoading }) => {
-        if (isLoading) {
-          return;
-        }
-
-        this.isLoading.set(false);
-
-        if (product) {
-          this.productModel.set({ ...(product as ICreateProductDto) });
-        } else {
-          this.router.navigate(['/admin/products']);
-        }
-      });
   }
 
   onSubmit(): void {
@@ -123,15 +154,8 @@ export class AdminProductFormPageComponent {
     if (this.isEditMode() && this.productId()) {
       this.productFacade.updateProduct(this.productId()!, formValue);
     } else {
-      const newProduct: ICreateProductDto = formValue;
-      this.productFacade.createProduct(newProduct);
+      this.productFacade.createProduct(formValue);
     }
-
-    // Aguarda um pouco para simular salvamento
-    setTimeout(() => {
-      this.isLoading.set(false);
-      this.router.navigate(['/admin/products']);
-    }, 1000);
   }
 
   onCancel(): void {

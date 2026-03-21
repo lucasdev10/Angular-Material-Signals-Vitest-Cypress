@@ -69,7 +69,7 @@ describe('Authentication Flow Integration Tests', () => {
   });
 
   describe('Complete Login Flow', () => {
-    it('should complete admin login flow with persistence', async () => {
+    it('should complete admin login flow with persistence', () => {
       // Arrange
       const mockResponse = {
         user: mockAdminUser,
@@ -86,12 +86,10 @@ describe('Authentication Flow Integration Tests', () => {
       });
 
       // Assert - Authentication state
-      await vi.waitFor(async () => {
-        expect(await authFacade.isAuthenticated()).toBe(true);
-        expect(await authFacade.isAdmin()).toBe(true);
-        expect((await authFacade.user()).email).toBe('admin@test.com');
-        expect(await authFacade.token()).toBe('admin-token-123');
-      });
+      expect(authFacade.isAuthenticated()).toBe(true);
+      expect(authFacade.isAdmin()).toBe(true);
+      expect(authFacade.user()?.email).toBe('admin@test.com');
+      expect(authFacade.token()).toBe('admin-token-123');
 
       // Assert - Storage persistence
       const storedToken = storageService.get('auth_token');
@@ -104,7 +102,7 @@ describe('Authentication Flow Integration Tests', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/admin']);
     });
 
-    it('should complete regular user login flow', async () => {
+    it('should complete regular user login flow', () => {
       // Arrange
       const mockResponse = {
         user: mockRegularUser,
@@ -121,16 +119,14 @@ describe('Authentication Flow Integration Tests', () => {
       });
 
       // Assert
-      await vi.waitFor(async () => {
-        expect(await authFacade.isAuthenticated()).toBe(true);
-        expect(await authFacade.isAdmin()).toBe(false);
-        expect(router.navigate).toHaveBeenCalledWith(['/products']);
-      });
+      expect(authFacade.isAuthenticated()).toBe(true);
+      expect(authFacade.isAdmin()).toBe(false);
+      expect(router.navigate).toHaveBeenCalledWith(['/products']);
     });
   });
 
   describe('Session Persistence', () => {
-    it('should restore session from localStorage on init', async () => {
+    it('should restore session from localStorage on init', () => {
       // Arrange - Simulate stored session
       storageService.set('auth_token', 'stored-token');
       storageService.set('auth_user', mockRegularUser);
@@ -152,12 +148,12 @@ describe('Authentication Flow Integration Tests', () => {
       const newAuthFacade = TestBed.inject(AuthFacade);
 
       // Assert
-      expect(await newAuthFacade.isAuthenticated()).toBe(true);
-      expect(await newAuthFacade.user()).toEqual(mockRegularUser);
-      expect(await newAuthFacade.token()).toBe('stored-token');
+      expect(newAuthFacade.isAuthenticated()).toBe(true);
+      expect(newAuthFacade.user()).toEqual(mockRegularUser);
+      expect(newAuthFacade.token()).toBe('stored-token');
     });
 
-    it('should start with empty state when no stored session', async () => {
+    it('should start with empty state when no stored session', () => {
       // Arrange - Clear storage
       localStorage.clear();
 
@@ -178,14 +174,14 @@ describe('Authentication Flow Integration Tests', () => {
       const newAuthFacade = TestBed.inject(AuthFacade);
 
       // Assert
-      expect(await newAuthFacade.isAuthenticated()).toBe(false);
-      expect(await newAuthFacade.user()).toBeNull();
-      expect(await newAuthFacade.token()).toBeNull();
+      expect(newAuthFacade.isAuthenticated()).toBe(false);
+      expect(newAuthFacade.user()).toBeNull();
+      expect(newAuthFacade.token()).toBeNull();
     });
   });
 
   describe('Complete Logout Flow', () => {
-    it('should complete logout flow and clear all data', async () => {
+    it('should complete logout flow and clear all data', () => {
       // Arrange - Login first
       const mockResponse = {
         user: mockRegularUser,
@@ -200,9 +196,7 @@ describe('Authentication Flow Integration Tests', () => {
         password: 'password',
       });
 
-      await vi.waitFor(async () => {
-        expect(await authFacade.isAuthenticated()).toBe(true);
-      });
+      expect(authFacade.isAuthenticated()).toBe(true);
 
       // Act - Logout
       const logoutSpy = vi.spyOn(authRepository, 'logout');
@@ -211,11 +205,9 @@ describe('Authentication Flow Integration Tests', () => {
       authFacade.logout();
 
       // Assert - State cleared
-      await vi.waitFor(async () => {
-        expect(await authFacade.isAuthenticated()).toBe(false);
-        expect(await authFacade.user()).toBeNull();
-        expect(await authFacade.token()).toBeNull();
-      });
+      expect(authFacade.isAuthenticated()).toBe(false);
+      expect(authFacade.user()).toBeNull();
+      expect(authFacade.token()).toBeNull();
 
       // Assert - Storage cleared
       expect(storageService.get('auth_token')).toBeNull();
@@ -225,7 +217,7 @@ describe('Authentication Flow Integration Tests', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
 
-    it('should clear auth even if logout API fails', async () => {
+    it('should clear auth even if logout API fails', () => {
       // Arrange - Login first
       const mockResponse = {
         user: mockRegularUser,
@@ -240,9 +232,7 @@ describe('Authentication Flow Integration Tests', () => {
         password: 'password',
       });
 
-      await vi.waitFor(async () => {
-        expect(await authFacade.isAuthenticated()).toBe(true);
-      });
+      expect(authFacade.isAuthenticated()).toBe(true);
 
       // Act - Logout with error
       const logoutSpy = vi.spyOn(authRepository, 'logout');
@@ -251,15 +241,13 @@ describe('Authentication Flow Integration Tests', () => {
       authFacade.logout();
 
       // Assert - Still clears auth
-      await vi.waitFor(async () => {
-        expect(await authFacade.isAuthenticated()).toBe(false);
-        expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
-      });
+      expect(authFacade.isAuthenticated()).toBe(false);
+      expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
   });
 
   describe('Error Handling', () => {
-    it('should handle invalid credentials', async () => {
+    it('should handle invalid credentials', () => {
       // Arrange
       const loginSpy = vi.spyOn(authRepository, 'login');
       loginSpy.mockReturnValue(throwError(() => ({ message: 'Invalid email or password' })));
@@ -271,18 +259,16 @@ describe('Authentication Flow Integration Tests', () => {
       });
 
       // Assert
-      await vi.waitFor(async () => {
-        expect(await authFacade.error()).toBe('Invalid email or password');
-        expect(await authFacade.isAuthenticated()).toBe(false);
-        expect(await authFacade.isLoading()).toBe(false);
-      });
+      expect(authFacade.error()).toBe('Invalid email or password');
+      expect(authFacade.isAuthenticated()).toBe(false);
+      expect(authFacade.isLoading()).toBe(false);
 
       // Assert - No storage
       expect(storageService.get('auth_token')).toBeNull();
       expect(storageService.get('auth_user')).toBeNull();
     });
 
-    it('should handle network errors', async () => {
+    it('should handle network errors', () => {
       // Arrange
       const loginSpy = vi.spyOn(authRepository, 'login');
       loginSpy.mockReturnValue(throwError(() => ({ message: 'Network error' })));
@@ -294,15 +280,13 @@ describe('Authentication Flow Integration Tests', () => {
       });
 
       // Assert
-      await vi.waitFor(async () => {
-        expect(await authFacade.error()).toBe('Network error');
-        expect(await authFacade.isAuthenticated()).toBe(false);
-      });
+      expect(authFacade.error()).toBe('Network error');
+      expect(authFacade.isAuthenticated()).toBe(false);
     });
   });
 
   describe('Role-Based Access', () => {
-    it('should correctly identify admin users', async () => {
+    it('should correctly identify admin users', () => {
       // Arrange
       const mockResponse = {
         user: mockAdminUser,
@@ -319,13 +303,11 @@ describe('Authentication Flow Integration Tests', () => {
       });
 
       // Assert
-      await vi.waitFor(async () => {
-        expect(await authFacade.isAdmin()).toBe(true);
-        expect((await authFacade.user()).role).toBe(EUserRole.ADMIN);
-      });
+      expect(authFacade.isAdmin()).toBe(true);
+      expect(authFacade.user()?.role).toBe(EUserRole.ADMIN);
     });
 
-    it('should correctly identify regular users', async () => {
+    it('should correctly identify regular users', () => {
       // Arrange
       const mockResponse = {
         user: mockRegularUser,
@@ -342,15 +324,13 @@ describe('Authentication Flow Integration Tests', () => {
       });
 
       // Assert
-      await vi.waitFor(async () => {
-        expect(await authFacade.isAdmin()).toBe(false);
-        expect((await authFacade.user()).role).toBe(EUserRole.USER);
-      });
+      expect(authFacade.isAdmin()).toBe(false);
+      expect(authFacade.user()?.role).toBe(EUserRole.USER);
     });
   });
 
   describe('Loading States', () => {
-    it('should manage loading state during login', async () => {
+    it('should manage loading state during login', () => {
       const subject = new Subject<any>();
 
       vi.spyOn(authRepository, 'login').mockReturnValue(subject.asObservable());
@@ -361,7 +341,7 @@ describe('Authentication Flow Integration Tests', () => {
       });
 
       // Loading deve estar true imediatamente
-      expect(await authFacade.isLoading()).toBe(true);
+      expect(authFacade.isLoading()).toBe(true);
 
       // Agora simulamos resposta do backend
       subject.next({
@@ -371,7 +351,7 @@ describe('Authentication Flow Integration Tests', () => {
       subject.complete();
 
       // Agora deve estar false
-      expect(await authFacade.isLoading()).toBe(false);
+      expect(authFacade.isLoading()).toBe(false);
     });
   });
 });

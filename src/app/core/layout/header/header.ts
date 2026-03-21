@@ -1,4 +1,3 @@
-import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +20,6 @@ import { CartFacade } from '@app/features/cart/store';
     MatDividerModule,
     RouterLink,
     RouterLinkActive,
-    AsyncPipe,
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
@@ -32,10 +30,10 @@ export class HeaderComponent {
   private readonly cartFacade = inject(CartFacade);
   private readonly authFacade = inject(AuthFacade);
 
-  readonly cartItemCount$ = this.cartFacade.itemCount$;
-  readonly isAuthenticated$ = this.authFacade.isAuthenticated$;
-  readonly isAdmin$ = this.authFacade.isAdmin$;
-  readonly user$ = this.authFacade.user$;
+  readonly cartItemCount = this.cartFacade.itemCount;
+  readonly isAuthenticated = this.authFacade.isAuthenticated;
+  readonly isAdmin = this.authFacade.isAdmin;
+  readonly user = this.authFacade.user;
 
   onLogout(): void {
     this.authFacade.logout();

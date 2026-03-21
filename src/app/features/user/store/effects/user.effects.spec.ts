@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
+import { provideMockStore } from '@ngrx/store/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { EUserRole, IUser } from '../../models/user.model';
 import { UserRepository } from '../../repositories/user.repository';
@@ -34,7 +35,12 @@ describe('UserEffects', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [UserEffects, provideMockActions(() => actions$), UserRepository],
+      providers: [
+        UserEffects,
+        provideMockStore(),
+        provideMockActions(() => actions$),
+        UserRepository,
+      ],
     });
 
     effects = TestBed.inject(UserEffects);

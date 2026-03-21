@@ -14,7 +14,7 @@
           <mat-icon>inventory_2</mat-icon>
         </div>
         <div class="stat-info">
-          <h3>{{ totalProducts$ | async }}</h3>
+          <h3>{{ totalProducts() }}</h3>
           <p>Total Products</p>
         </div>
       </mat-card-content>
@@ -26,7 +26,7 @@
           <mat-icon>attach_money</mat-icon>
         </div>
         <div class="stat-info">
-          <h3>{{ totalValue$ | async | currency: 'BRL' }}</h3>
+          <h3>{{ totalValue() | currency: 'BRL' }}</h3>
           <p>Total Value in Stock</p>
         </div>
       </mat-card-content>
@@ -38,7 +38,7 @@
           <mat-icon>warning</mat-icon>
         </div>
         <div class="stat-info">
-          <h3>{{ lowStockProducts$ | async }}</h3>
+          <h3>{{ lowStockProducts() }}</h3>
           <p>Low Stock Products</p>
         </div>
       </mat-card-content>
@@ -50,7 +50,7 @@
           <mat-icon>shopping_cart</mat-icon>
         </div>
         <div class="stat-info">
-          <h3>{{ totalOrders$ | async }}</h3>
+          <h3>{{ totalOrders() }}</h3>
           <p>Items in Cart</p>
         </div>
       </mat-card-content>

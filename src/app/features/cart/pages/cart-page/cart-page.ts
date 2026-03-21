@@ -1,4 +1,4 @@
-import { AsyncPipe, CurrencyPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -7,7 +7,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
 import { CartFacade } from '../../store';
 
 @Component({
@@ -20,7 +19,6 @@ import { CartFacade } from '../../store';
     MatInputModule,
     MatDividerModule,
     CurrencyPipe,
-    AsyncPipe,
   ],
   templateUrl: './cart-page.html',
   styleUrl: './cart-page.scss',
@@ -31,14 +29,14 @@ export class CartPage {
   private readonly cartFacade = inject(CartFacade);
   private readonly router = inject(Router);
 
-  readonly items$ = this.cartFacade.items$;
-  readonly subtotal$ = this.cartFacade.subtotal$;
-  readonly shipping$ = this.cartFacade.shipping$;
-  readonly tax$ = this.cartFacade.tax$;
-  readonly total$ = this.cartFacade.total$;
-  readonly itemCount$ = this.cartFacade.itemCount$;
-  readonly isEmpty$ = this.cartFacade.isEmpty$;
-  readonly hasFreeShipping$ = this.cartFacade.hasFreeShipping$;
+  readonly items = this.cartFacade.items;
+  readonly subtotal = this.cartFacade.subtotal;
+  readonly shipping = this.cartFacade.shipping;
+  readonly tax = this.cartFacade.tax;
+  readonly total = this.cartFacade.total;
+  readonly itemCount = this.cartFacade.itemCount;
+  readonly isEmpty = this.cartFacade.isEmpty;
+  readonly hasFreeShipping = this.cartFacade.hasFreeShipping;
 
   onRemoveItem(productId: string): void {
     this.cartFacade.removeItem(productId);
@@ -66,7 +64,7 @@ export class CartPage {
 
   async onCheckout(): Promise<void> {
     // TODO: Implementar checkout
-    console.log(...oo_oo(`705132995_68_4_68_52_4`, 'Checkout:', await firstValueFrom(this.items$)));
+    console.log(...oo_oo(`705132995_68_4_68_52_4`, 'Checkout:', this.items()));
   }
 }
 /* istanbul ignore next */ /* c8 ignore start */ /* eslint-disable */ function oo_cm() {
