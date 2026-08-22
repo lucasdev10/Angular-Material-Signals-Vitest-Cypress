@@ -10,7 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
 import { IProduct } from '@app/features/products/models/product.model';
 import { ProductFacade } from '@app/features/products/store';
-import { ConfirmDialogComponent } from '@app/shared/components/confirm-dialog/confirm-dialog';
+import { ConfirmDialogComponent } from '@app/shared';
 
 @Component({
   selector: 'app-admin-products-page',

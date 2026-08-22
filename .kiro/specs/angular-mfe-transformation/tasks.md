@@ -7,21 +7,21 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
 ## Tasks
 
 - [ ] 1. Create Shared Library foundation
-  - [ ] 1.1 Create coffee-shared-lib repository with Angular library structure
+  - [x] 1.1 Create coffee-shared-lib repository with Angular library structure
     - Initialize new Git repository
     - Set up Angular library project using `ng generate library coffee-shared`
     - Configure package.json with library metadata and build scripts
     - Set up tsconfig.json for library compilation
     - Create public-api.ts barrel export file
     - _Requirements: 7.1, 7.9, 7.12_
-  - [ ] 1.2 Extract and migrate shared components to library
+  - [x] 1.2 Extract and migrate shared components to library
     - Move FormErrorComponent from monolith to library
     - Move InputComponent from monolith to library
     - Move ConfirmDialogComponent from monolith to library
     - Update imports and ensure components are standalone
     - Export all components via public-api.ts
     - _Requirements: 7.2, 7.9_
-  - [ ] 1.3 Extract and migrate shared directives to library
+  - [x] 1.3 Extract and migrate shared directives to library
     - Move ClickOutsideDirective from monolith
     - Move LazyLoadDirective from monolith
     - Move DebounceClickDirective from monolith

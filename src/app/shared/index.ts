@@ -6,6 +6,7 @@
 // Components
 export * from './components/confirm-dialog';
 export * from './components/form-error/form-error';
+export * from './components/input/input';
 
 // Pipes
 export * from './pipes/filter.pipe';
