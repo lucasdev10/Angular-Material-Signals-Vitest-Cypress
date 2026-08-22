@@ -1,0 +1,655 @@
+# Implementation Plan: Angular MFE Transformation
+
+## Overview
+
+This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a Micro Frontend architecture using Webpack 5 Module Federation. The implementation creates six independent applications (Shell App + 5 MFEs) and a Shared Library, enabling autonomous development, testing, and deployment. The transformation maintains all existing functionality while establishing clear MFE boundaries and communication patterns.
+
+## Tasks
+
+- [ ] 1. Create Shared Library foundation
+  - [ ] 1.1 Create coffee-shared-lib repository with Angular library structure
+    - Initialize new Git repository
+    - Set up Angular library project using `ng generate library coffee-shared`
+    - Configure package.json with library metadata and build scripts
+    - Set up tsconfig.json for library compilation
+    - Create public-api.ts barrel export file
+    - _Requirements: 7.1, 7.9, 7.12_
+  - [ ] 1.2 Extract and migrate shared components to library
+    - Move FormErrorComponent from monolith to library
+    - Move InputComponent from monolith to library
+    - Move ConfirmDialogComponent from monolith to library
+    - Update imports and ensure components are standalone
+    - Export all components via public-api.ts
+    - _Requirements: 7.2, 7.9_
+  - [ ] 1.3 Extract and migrate shared directives to library
+    - Move ClickOutsideDirective from monolith
+    - Move LazyLoadDirective from monolith
+    - Move DebounceClickDirective from monolith
+    - Move AutoFocusDirective from monolith
+    - Export all directives via public-api.ts
+    - _Requirements: 7.3, 7.9_
+  - [ ] 1.4 Extract and migrate shared pipes to library
+    - Move SafeHtmlPipe from monolith
+    - Move TimeAgoPipe from monolith
+    - Move TruncatePipe from monolith
+    - Move FilterPipe from monolith
+    - Move HighlightPipe from monolith
+    - Export all pipes via public-api.ts
+    - _Requirements: 7.4, 7.9_
+  - [ ] 1.5 Extract and migrate validators, utils, models, and enums
+    - Move CustomValidators to library
+    - Move DateUtils, StringUtils, ArrayUtils to library
+    - Move ApiResponse, User models to library
+    - Move OrderStatus, PaymentMethod enums to library
+    - Export all via public-api.ts
+    - _Requirements: 7.5, 7.6, 7.7, 7.8, 7.9_
+  - [ ]\* 1.6 Migrate shared library unit tests
+    - Move all component tests to library
+    - Move all pipe tests to library
+    - Move all directive tests to library
+    - Move all validator and util tests to library
+    - Ensure all tests pass with `npm test`
+    - _Requirements: 7.10_
+  - [ ] 1.7 Build and publish Shared Library
+    - Configure build script to generate distributable package
+    - Build library with `npm run build`
+    - Set up semantic versioning (1.0.0 initial version)
+    - Publish to npm registry (private or public)
+    - _Requirements: 7.11, 7.12_
+
+- [ ] 2. Set up Shell App (Host) infrastructure
+  - [ ] 2.1 Configure Shell App Module Federation as host
+    - Install @angular-architects/module-federation package
+    - Create webpack.config.js with ModuleFederationPlugin configuration
+    - Configure Shell as host with all remote declarations (products, cart, admin, auth, user)
+    - Configure shared dependencies as singletons (@angular/core, @angular/common, @ngrx/store, rxjs)
+    - Update angular.json to use custom webpack builder
+    - _Requirements: 1.9, 8.1, 8.2, 8.6_
+  - [ ] 2.2 Implement Shell App routing with remote module loading
+    - Update app.routes.ts to use loadRemoteModule for each MFE
+    - Configure route for /products loading Products MFE
+    - Configure route for /cart loading Cart MFE
+    - Configure route for /admin/\* loading Admin MFE with guards
+    - Configure route for /auth/\* loading Auth MFE
+    - Configure route for /user/\* loading User MFE with authGuard
+    - Configure root redirect to /products and wildcard fallback
+    - _Requirements: 1.6, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8_
+  - [ ] 2.3 Set up environment-specific remote URLs
+    - Create environment.ts with development remote URLs (localhost:4201-4205)
+    - Create environment.prod.ts with production CDN URLs
+    - Update routing to use environment-based remote URLs
+    - _Requirements: 8.7, 14.6, 14.7_
+  - [ ] 2.4 Configure Shell App NgRx global store
+    - Set up provideStore with auth, cart, and user slices
+    - Create AuthState with token, user, isAuthenticated fields
+    - Create CartState with items, total, count fields
+    - Create UserState with profile and preferences fields
+    - Configure store as singleton to be shared with MFEs
+    - Implement store persistence to localStorage for auth and cart slices
+    - _Requirements: 1.7, 10.1, 10.2, 10.3, 10.4, 10.10_
+  - [ ] 2.5 Preserve Shell App core services, guards, and interceptors
+    - Keep guards: authGuard, roleGuard, unsavedChangesGuard in core/guards
+    - Keep interceptors: authInterceptor, errorInterceptor, loadingInterceptor, cacheInterceptor in core/interceptors
+    - Keep services: LoadingService, NotificationService, ThemeService, LoggerService, StorageService
+    - Ensure all are exported and accessible to MFEs
+    - _Requirements: 1.3, 1.4, 1.5_
+  - [ ] 2.6 Implement Remote Module Loader Service with error handling
+    - Create RemoteLoaderService with loadRemoteModule wrapper
+    - Implement timeout (10s) and retry logic (3 attempts with exponential backoff)
+    - Implement circuit breaker pattern for consecutive failures
+    - Create fallback component for MFE load failures
+    - Implement error logging and user notifications
+    - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6, 19.11, 19.12_
+  - [ ] 2.7 Implement Custom Event Bus Service for inter-MFE communication
+    - Create EventBusService with emit and listen methods
+    - Implement MFECustomEvent interface with type, detail, timestamp, source
+    - Use window.dispatchEvent for global event propagation
+    - Use fromEvent + RxJS operators for reactive event listening
+    - Document all custom events in README
+    - _Requirements: 11.7, 11.8, 11.9_
+  - [ ]\* 2.8 Migrate Shell App unit tests
+    - Keep and update all guard tests
+    - Keep and update all interceptor tests
+    - Keep and update all core service tests
+    - Ensure Header component tests work with NgRx store
+    - _Requirements: 1.10, 15.3_
+
+- [ ] 3. Checkpoint - Verify Shell App foundation
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [ ] 4. Create Products MFE
+  - [ ] 4.1 Create coffee-products-mfe repository with Angular structure
+    - Initialize new Git repository
+    - Create Angular application using Angular CLI
+    - Install @angular-architects/module-federation
+    - Configure package.json with scripts for port 4201
+    - Add coffee-shared-lib as dependency
+    - _Requirements: 2.1, 2.11, 12.2, 17.1_
+  - [ ] 4.2 Configure Products MFE Module Federation as remote
+    - Create webpack.config.js with ModuleFederationPlugin as remote
+    - Set name to "products" and filename to "remoteEntry.js"
+    - Expose './Routes' pointing to products.routes.ts
+    - Configure shared dependencies as singletons matching Shell App
+    - Set publicPath to "auto" and uniqueName to "products"
+    - Update angular.json to use custom webpack builder
+    - _Requirements: 2.7, 2.8, 8.3, 8.4, 8.8_
+  - [ ] 4.3 Extract Products feature components and pages
+    - Move ProductCard component from monolith to MFE
+    - Move ProductForm component from monolith to MFE
+    - Move ProductListPage from monolith to MFE
+    - Move ProductDetailPage from monolith to MFE
+    - Move ProductCreatePage from monolith to MFE
+    - Update all imports to use coffee-shared-lib
+    - _Requirements: 2.2, 2.3, 2.9_
+  - [ ] 4.4 Extract Products repository and store
+    - Move ProductRepository to MFE
+    - Create ProductState with products, selectedProduct, loading, error, filters
+    - Create ProductActions for CRUD operations
+    - Create ProductSelectors for state queries
+    - Create ProductEffects for async operations
+    - Wire up NgRx store slice for products
+    - _Requirements: 2.4, 2.5_
+  - [ ] 4.5 Create Products MFE routing
+    - Create products.routes.ts exporting PRODUCT_ROUTES
+    - Configure route "" for ProductListPage
+    - Configure route ":id" for ProductDetailPage
+    - Configure route "new" for ProductCreatePage
+    - Inject global Store to access auth and cart state
+    - _Requirements: 2.6, 2.12_
+  - [ ]\* 4.6 Migrate Products MFE unit tests
+    - Move product.repository.spec.ts
+    - Move product-flow.spec.ts
+    - Move component tests for ProductCard, ProductForm
+    - Update test imports to use coffee-shared-lib
+    - Ensure all tests pass with `npm test`
+    - _Requirements: 2.10, 15.2_
+  - [ ] 4.7 Create Products MFE development and build scripts
+    - Add "start" script to serve on port 4201
+    - Add "build" script for production build
+    - Add "test" and "test:coverage" scripts
+    - Add live-reload configuration for development
+    - Create README.md with setup instructions
+    - _Requirements: 13.2, 13.8, 13.12, 15.4, 12.9_
+
+- [ ] 5. Create Cart MFE
+  - [ ] 5.1 Create coffee-cart-mfe repository with Angular structure
+    - Initialize new Git repository
+    - Create Angular application using Angular CLI
+    - Install @angular-architects/module-federation
+    - Configure package.json with scripts for port 4202
+    - Add coffee-shared-lib as dependency
+    - _Requirements: 3.1, 3.10, 12.3, 17.1_
+  - [ ] 5.2 Configure Cart MFE Module Federation as remote
+    - Create webpack.config.js with ModuleFederationPlugin as remote
+    - Set name to "cart" and filename to "remoteEntry.js"
+    - Expose './Routes' pointing to cart.routes.ts
+    - Configure shared dependencies as singletons
+    - Set publicPath to "auto" and uniqueName to "cart"
+    - _Requirements: 3.6, 3.7, 8.3, 8.4, 8.8_
+  - [ ] 5.3 Extract Cart page and implement local store
+    - Move CartPage from monolith to MFE
+    - Create CartState with items, total, count, loading, error
+    - Create CartActions: addItem, removeItem, clearCart, updateQuantity
+    - Create CartSelectors for cart data queries
+    - Wire up NgRx store slice for cart
+    - Update imports to use coffee-shared-lib
+    - _Requirements: 3.2, 3.3, 3.8_
+  - [ ] 5.4 Implement Cart MFE store synchronization with global store
+    - Inject global Store from Shell App
+    - Dispatch actions to update global cart slice
+    - Subscribe to global cart state changes
+    - Implement localStorage persistence via StorageService
+    - _Requirements: 3.4, 3.11, 10.7_
+  - [ ] 5.5 Implement Cart MFE custom event emission
+    - Inject EventBusService
+    - Emit "cart:item-added" event with product and quantity
+    - Emit "cart:item-removed" event with productId
+    - Emit "cart:cleared" event when cart is cleared
+    - _Requirements: 3.12, 11.1, 11.2, 11.3_
+  - [ ] 5.6 Create Cart MFE routing
+    - Create cart.routes.ts exporting CART_ROUTES
+    - Configure route "" for CartPage
+    - _Requirements: 3.5_
+  - [ ]\* 5.7 Migrate Cart MFE unit tests
+    - Move cart unit tests from monolith
+    - Test cart actions, reducers, selectors
+    - Test event emission logic
+    - Ensure all tests pass
+    - _Requirements: 3.9, 15.4_
+  - [ ] 5.8 Create Cart MFE development and build scripts
+    - Add "start" script to serve on port 4202
+    - Add "build", "test", "test:coverage" scripts
+    - Create README.md with setup instructions
+    - _Requirements: 13.3, 13.8, 15.4, 12.9_
+
+- [ ] 6. Create Admin MFE
+  - [ ] 6.1 Create coffee-admin-mfe repository with Angular structure
+    - Initialize new Git repository
+    - Create Angular application using Angular CLI
+    - Install @angular-architects/module-federation
+    - Configure package.json with scripts for port 4203
+    - Add coffee-shared-lib as dependency
+    - _Requirements: 4.1, 4.10, 12.4, 17.1_
+  - [ ] 6.2 Configure Admin MFE Module Federation as remote
+    - Create webpack.config.js with ModuleFederationPlugin as remote
+    - Set name to "admin" and filename to "remoteEntry.js"
+    - Expose './Routes' pointing to admin.routes.ts
+    - Configure shared dependencies as singletons
+    - Set publicPath to "auto" and uniqueName to "admin"
+    - _Requirements: 4.5, 4.6, 8.3, 8.4, 8.8_
+  - [ ] 6.3 Extract Admin pages
+    - Move AdminDashboardPage from monolith to MFE
+    - Move AdminProductsPage from monolith to MFE
+    - Move AdminProductFormPage from monolith to MFE
+    - Update imports to use coffee-shared-lib
+    - _Requirements: 4.2, 4.8_
+  - [ ] 6.4 Implement Admin MFE repository access
+    - Create or import ProductRepository for CRUD operations
+    - Wire repository to Admin pages for product management
+    - _Requirements: 4.3_
+  - [ ] 6.5 Create Admin MFE routing with role protection
+    - Create admin.routes.ts exporting ADMIN_ROUTES
+    - Configure route "" for AdminDashboardPage
+    - Configure route "products" for AdminProductsPage
+    - Configure route "products/new" for AdminProductFormPage
+    - Configure route "products/:id/edit" for AdminProductFormPage
+    - Inject global Store to verify ADMIN role from auth state
+    - _Requirements: 4.4, 4.7, 4.11, 9.5_
+  - [ ]\* 6.6 Migrate Admin MFE unit tests
+    - Move admin page unit tests from monolith
+    - Test role-based access logic
+    - Ensure all tests pass
+    - _Requirements: 4.9, 15.4_
+  - [ ] 6.7 Create Admin MFE development and build scripts
+    - Add "start" script to serve on port 4203
+    - Add "build", "test", "test:coverage" scripts
+    - Create README.md with setup instructions
+    - _Requirements: 13.4, 13.8, 15.4, 12.9_
+
+- [ ] 7. Create Auth MFE
+  - [ ] 7.1 Create coffee-auth-mfe repository with Angular structure
+    - Initialize new Git repository
+    - Create Angular application using Angular CLI
+    - Install @angular-architects/module-federation
+    - Configure package.json with scripts for port 4204
+    - Add coffee-shared-lib as dependency
+    - _Requirements: 5.1, 5.10, 12.5, 17.1_
+  - [ ] 7.2 Configure Auth MFE Module Federation as remote
+    - Create webpack.config.js with ModuleFederationPlugin as remote
+    - Set name to "auth" and filename to "remoteEntry.js"
+    - Expose './Routes' pointing to auth.routes.ts
+    - Configure shared dependencies as singletons
+    - Set publicPath to "auto" and uniqueName to "auth"
+    - _Requirements: 5.6, 5.7, 8.3, 8.4, 8.8_
+  - [ ] 7.3 Extract Auth pages
+    - Move LoginPage from monolith to MFE
+    - Move RegisterPage from monolith to MFE
+    - Update imports to use coffee-shared-lib
+    - _Requirements: 5.2, 5.8_
+  - [ ] 7.4 Implement Auth MFE store and synchronization
+    - Create AuthState with token, user, isAuthenticated, loading, error
+    - Create AuthActions: login, logout, register, updateToken
+    - Create AuthSelectors for auth queries
+    - Create AuthEffects for async authentication operations
+    - Inject global Store and dispatch to global auth slice
+    - Implement token persistence via StorageService
+    - _Requirements: 5.3, 5.4, 5.12, 10.6_
+  - [ ] 7.5 Implement Auth MFE custom event emission
+    - Inject EventBusService
+    - Emit "auth:login" event with user and token on successful login
+    - Emit "auth:logout" event on logout
+    - _Requirements: 5.11, 11.4, 11.5_
+  - [ ] 7.6 Create Auth MFE routing
+    - Create auth.routes.ts exporting AUTH_ROUTES
+    - Configure route "login" for LoginPage
+    - Configure route "register" for RegisterPage
+    - _Requirements: 5.5_
+  - [ ]\* 7.7 Migrate Auth MFE unit tests
+    - Move auth unit tests from monolith
+    - Test login, logout, register flows
+    - Test event emission
+    - Ensure all tests pass
+    - _Requirements: 5.9, 15.4_
+  - [ ] 7.8 Create Auth MFE development and build scripts
+    - Add "start" script to serve on port 4204
+    - Add "build", "test", "test:coverage" scripts
+    - Create README.md with setup instructions
+    - _Requirements: 13.5, 13.8, 15.4, 12.9_
+
+- [ ] 8. Create User MFE
+  - [ ] 8.1 Create coffee-user-mfe repository with Angular structure
+    - Initialize new Git repository
+    - Create Angular application using Angular CLI
+    - Install @angular-architects/module-federation
+    - Configure package.json with scripts for port 4205
+    - Add coffee-shared-lib as dependency
+    - _Requirements: 6.1, 6.10, 12.6, 17.1_
+  - [ ] 8.2 Configure User MFE Module Federation as remote
+    - Create webpack.config.js with ModuleFederationPlugin as remote
+    - Set name to "user" and filename to "remoteEntry.js"
+    - Expose './Routes' pointing to user.routes.ts
+    - Configure shared dependencies as singletons
+    - Set publicPath to "auto" and uniqueName to "user"
+    - _Requirements: 6.6, 6.7, 8.3, 8.4, 8.8_
+  - [ ] 8.3 Extract User pages
+    - Move ProfilePage from monolith to MFE
+    - Move SettingsPage from monolith to MFE
+    - Update imports to use coffee-shared-lib
+    - _Requirements: 6.2, 6.8_
+  - [ ] 8.4 Implement User MFE store and synchronization
+    - Create UserState with profile, preferences, loading, error
+    - Create UserActions: updateProfile, updatePreferences
+    - Create UserSelectors for user data queries
+    - Create UserEffects for async user operations
+    - Inject global Store and dispatch to global user slice
+    - _Requirements: 6.3, 6.4, 10.8_
+  - [ ] 8.5 Implement User MFE custom event emission
+    - Inject EventBusService
+    - Emit "user:profile-updated" event when profile is updated
+    - _Requirements: 11.6_
+  - [ ] 8.6 Create User MFE routing with auth protection
+    - Create user.routes.ts exporting USER_ROUTES
+    - Configure route "profile" for ProfilePage
+    - Configure route "settings" for SettingsPage
+    - Inject global Store to verify authentication
+    - _Requirements: 6.5, 6.11_
+  - [ ]\* 8.7 Migrate User MFE unit tests
+    - Move user page unit tests from monolith
+    - Test profile update flows
+    - Test event emission
+    - Ensure all tests pass
+    - _Requirements: 6.9, 15.4_
+  - [ ] 8.8 Create User MFE development and build scripts
+    - Add "start" script to serve on port 4205
+    - Add "build", "test", "test:coverage" scripts
+    - Create README.md with setup instructions
+    - _Requirements: 13.6, 13.8, 15.4, 12.9_
+
+- [ ] 9. Checkpoint - Verify all MFEs are independently functional
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [ ] 10. Integrate all MFEs with Shell App
+  - [ ] 10.1 Update Shell App to consume all MFE remotes
+    - Verify all remote URLs are correctly configured in webpack.config.js
+    - Verify all routes use loadRemoteModule correctly
+    - Test navigation between all MFEs
+    - Verify guards protect admin and user routes correctly
+    - _Requirements: 8.2, 9.1, 9.5, 9.6, 9.7_
+  - [ ] 10.2 Implement Shell App loading indicators for MFE loading
+    - Show LoadingService spinner when MFE is being fetched
+    - Hide spinner once MFE is loaded and rendered
+    - Display friendly message during loading
+    - _Requirements: 18.5_
+  - [ ] 10.3 Implement Shell App Header cart count integration
+    - Subscribe to global cart state selectCartCount selector
+    - Display cart count in Header navigation
+    - Update count reactively when cart changes
+    - _Requirements: 1.2, 10.9_
+  - [ ] 10.4 Implement Shell App authentication state integration
+    - Subscribe to global auth state selectors (isAuthenticated, isAdmin)
+    - Show/hide navigation links based on auth state
+    - Redirect to login when accessing protected routes unauthenticated
+    - _Requirements: 1.2, 9.9, 10.9_
+  - [ ] 10.5 Configure Shell App query params and fragment preservation
+    - Ensure query params persist during MFE navigation
+    - Ensure URL fragments persist during navigation
+    - _Requirements: 9.10_
+  - [ ]\* 10.6 Write integration tests for MFE communication
+    - Test NgRx store synchronization between Cart MFE and Shell
+    - Test NgRx store synchronization between Auth MFE and Shell
+    - Test custom event emission and listening
+    - Test navigation between MFEs preserves state
+    - _Requirements: 15.7, 15.8_
+
+- [ ] 11. Set up local multi-MFE development environment
+  - [ ] 11.1 Create start:all script in Shell App
+    - Install concurrently as dev dependency
+    - Create script to start Shell + all 5 MFEs simultaneously
+    - Ensure each MFE starts on correct port
+    - _Requirements: 13.9_
+  - [ ] 11.2 Document local development setup
+    - Add section to Shell App README explaining multi-MFE setup
+    - Document port assignments for all MFEs
+    - Document how to start individual MFEs vs all at once
+    - Document how to troubleshoot MFE loading issues
+    - _Requirements: 13.11, 16.3_
+
+- [ ] 12. Set up CI/CD pipelines for independent deployment
+  - [ ] 12.1 Create GitHub Actions workflow for Shared Library
+    - Create .github/workflows/ci-cd.yml
+    - Add steps: checkout, install, lint, test, build
+    - Add step to publish to npm registry on version tag push
+    - _Requirements: 14.1, 14.2, 14.3, 14.11_
+  - [ ] 12.2 Create GitHub Actions workflow for Shell App
+    - Create .github/workflows/ci-cd.yml
+    - Add steps: checkout, install, lint, test, build
+    - Add step to deploy build artifacts to CDN/hosting
+    - Configure environment variables for production remote URLs
+    - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 14.7_
+  - [ ] 12.3 Create GitHub Actions workflows for all MFEs
+    - Create .github/workflows/ci-cd.yml in each MFE repository
+    - Add steps: checkout, install, lint, test, build
+    - Add step to deploy remoteEntry.js and chunks to CDN
+    - Configure cache busting with content hashes
+    - Add rollback scripts to restore previous version
+    - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 14.8, 14.9, 14.10_
+  - [ ]\* 12.4 Test deployment pipeline end-to-end
+    - Trigger CI/CD for one MFE and verify deployment
+    - Verify Shell App can load deployed MFE from CDN
+    - Test rollback script to restore previous version
+    - Verify independent deployment doesn't affect other MFEs
+    - _Requirements: 14.10_
+
+- [ ] 13. Implement performance optimizations
+  - [ ] 13.1 Implement MFE prefetching in Shell App
+    - Prefetch Products and Cart MFEs after initial Shell load
+    - Use link rel="prefetch" or manual fetch for remoteEntry.js
+    - _Requirements: 18.2_
+  - [ ] 13.2 Optimize MFE bundle sizes
+    - Verify each MFE bundle size is under 200KB gzipped
+    - Implement code splitting for internal MFE routes
+    - Remove unused dependencies from each MFE
+    - _Requirements: 18.4, 18.10_
+  - [ ] 13.3 Implement caching strategies
+    - Configure remoteEntry.js caching (1 hour in production)
+    - Configure chunk caching with content hashes
+    - Implement service worker for offline caching if needed
+    - _Requirements: 18.6, 18.7_
+  - [ ] 13.4 Optimize Shell App critical CSS
+    - Inline critical CSS in Shell App index.html
+    - Defer non-critical styles to avoid FOUC
+    - _Requirements: 18.9_
+  - [ ]\* 13.5 Measure and validate Core Web Vitals
+    - Implement Web Vitals API monitoring
+    - Send metrics to analytics service
+    - Validate LCP < 2.5s, FID < 100ms, CLS < 0.1
+    - Run Lighthouse and ensure score >= 90
+    - _Requirements: 18.8, 18.11, 18.12_
+
+- [ ] 14. Implement error handling and resilience
+  - [ ] 14.1 Implement fallback UI components
+    - Create MFEFallbackComponent to display when MFE fails to load
+    - Show friendly error message with retry button
+    - Log error details to LoggerService
+    - _Requirements: 19.2, 19.3, 19.4, 19.5_
+  - [ ] 14.2 Implement MFE error event handling
+    - Create ErrorHandler in each MFE to catch internal errors
+    - Emit "mfe:error" custom event with error details
+    - Listen for "mfe:error" in Shell App and display global notification
+    - _Requirements: 19.8, 19.9, 19.10_
+  - [ ] 14.3 Test error scenarios
+    - Test MFE fails to load (network error, 404)
+    - Test MFE times out during load
+    - Test MFE internal error after successful load
+    - Verify fallback UI displays correctly
+    - Verify retry mechanism works
+    - _Requirements: 19.1, 19.11_
+
+- [ ] 15. Implement feature flags for gradual migration
+  - [ ] 15.1 Create feature flag service in Shell App
+    - Create FeatureFlagService with isEnabled(featureName) method
+    - Support environment-based and runtime feature flags
+    - Store feature flag config in environment files
+    - _Requirements: 20.1_
+  - [ ] 15.2 Implement hybrid routing with feature flags
+    - Wrap each loadRemoteModule call with feature flag check
+    - If MFE flag disabled, load monolithic route instead
+    - Support mixed mode (some MFEs enabled, some disabled)
+    - _Requirements: 20.2, 20.3_
+  - [ ] 15.3 Document migration strategy
+    - Create docs/MIGRATION_STRATEGY.md
+    - Document phased rollout plan: Products → Cart → Auth → User → Admin
+    - Document success criteria for each phase
+    - Document rollback procedures
+    - _Requirements: 20.9, 20.10_
+
+- [ ] 16. Create comprehensive documentation
+  - [ ] 16.1 Create architecture documentation
+    - Create docs/MFE_ARCHITECTURE.md with complete architecture overview
+    - Include mermaid diagrams showing Shell and MFE relationships
+    - Document Module Federation configuration patterns
+    - Document repository structure
+    - _Requirements: 16.1, 16.5_
+  - [ ] 16.2 Create communication documentation
+    - Create docs/MFE_COMMUNICATION.md
+    - Document NgRx store communication patterns
+    - Document custom event patterns with examples
+    - List all custom events with payloads and usage
+    - _Requirements: 16.2, 16.7_
+  - [ ] 16.3 Create development guide
+    - Create docs/MFE_DEVELOPMENT.md
+    - Document local multi-MFE setup
+    - Document how to create a new MFE
+    - Document debugging techniques
+    - _Requirements: 16.3_
+  - [ ] 16.4 Create deployment guide
+    - Create docs/MFE_DEPLOYMENT.md
+    - Document CI/CD pipeline setup
+    - Document environment configuration
+    - Document rollback procedures
+    - _Requirements: 16.4_
+  - [ ] 16.5 Create feature mapping table
+    - Create table mapping monolith features to MFEs
+    - Document which components/services moved where
+    - _Requirements: 16.6_
+  - [ ] 16.6 Create troubleshooting guide
+    - Document common issues and solutions
+    - Document how to debug MFE loading failures
+    - Document version compatibility issues
+    - _Requirements: 16.8_
+  - [ ] 16.7 Create compatibility matrix
+    - Create docs/COMPATIBILITY.md
+    - List compatible versions of Angular, Material, NgRx
+    - List compatible versions of each MFE and Shared Library
+    - Document upgrade procedures
+    - _Requirements: 17.8, 17.9_
+
+- [ ] 17. Set up version management and compatibility checks
+  - [ ] 17.1 Align all MFE dependencies to same versions
+    - Verify all MFEs use Angular 21.x
+    - Verify all MFEs use Angular Material 21.x
+    - Verify all MFEs use NgRx 21.x
+    - Verify all shared dependencies are aligned
+    - _Requirements: 17.1, 17.2, 17.3_
+  - [ ] 17.2 Create changelog templates for all repositories
+    - Add CHANGELOG.md to Shared Library
+    - Add CHANGELOG.md to each MFE
+    - Document versioning conventions
+    - _Requirements: 17.9_
+  - [ ]\* 17.3 Implement build-time compatibility validation
+    - Create script to validate shared dependency versions across MFEs
+    - Run validation in CI/CD pipelines
+    - Fail build if version mismatches detected
+    - _Requirements: 17.10_
+
+- [ ] 18. Migrate and update E2E tests
+  - [ ] 18.1 Update Cypress configuration for MFE testing
+    - Configure Cypress to work with multiple origins (MFE URLs)
+    - Update baseUrl and environment configuration
+    - _Requirements: 15.6, 15.7_
+  - [ ]\* 18.2 Create E2E test for complete user flow
+    - Test flow: login → products → add to cart → admin dashboard
+    - Verify state persistence across MFE boundaries
+    - Verify guards work correctly
+    - Verify cart count updates in header
+    - _Requirements: 15.11_
+  - [ ]\* 18.3 Create E2E regression tests
+    - Test feature parity between monolith and MFE architecture
+    - Validate all existing functionality works
+    - _Requirements: 20.8_
+
+- [ ] 19. Final integration and validation
+  - [ ] 19.1 Perform end-to-end smoke test
+    - Start all MFEs locally with start:all
+    - Test navigation to each MFE
+    - Test authentication flow
+    - Test cart functionality
+    - Test admin functionality
+    - Verify no console errors
+    - _Requirements: 13.9_
+  - [ ] 19.2 Validate test coverage across all repositories
+    - Verify Shared Library has >= 80% coverage
+    - Verify each MFE has >= 80% coverage
+    - Verify Shell App has >= 80% coverage
+    - _Requirements: 15.12_
+  - [ ] 19.3 Validate documentation completeness
+    - Review all docs files are complete
+    - Ensure all custom events are documented
+    - Ensure all feature flags are documented
+    - Ensure compatibility matrix is accurate
+    - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.7_
+  - [ ] 19.4 Perform performance baseline comparison
+    - Measure monolith performance metrics
+    - Measure MFE architecture performance metrics
+    - Compare bundle sizes, load times, Core Web Vitals
+    - Document performance report
+    - _Requirements: 18.8, 20.12_
+
+- [ ] 20. Final checkpoint - Complete transformation validation
+  - Ensure all tests pass, ask the user if questions arise.
+
+## Notes
+
+- Tasks marked with `*` are optional testing and validation tasks and can be skipped for faster MVP
+- Each task references specific requirements from requirements.md for traceability
+- The transformation follows a phased approach: Shared Library → Shell → MFEs → Integration → Testing → Documentation
+- Independent repositories enable autonomous development and deployment for each MFE
+- NgRx store and custom events provide decoupled communication between MFEs
+- Feature flags enable gradual migration with rollback capabilities
+- All existing tests are preserved and reorganized by MFE ownership
+- Performance optimizations ensure the MFE architecture meets or exceeds monolith performance
+- Comprehensive documentation enables smooth onboarding and maintenance
+
+## Task Dependency Graph
+
+```json
+{
+  "waves": [
+    { "id": 0, "tasks": ["1.1"] },
+    { "id": 1, "tasks": ["1.2", "1.3", "1.4", "1.5"] },
+    { "id": 2, "tasks": ["1.6", "1.7"] },
+    { "id": 3, "tasks": ["2.1"] },
+    { "id": 4, "tasks": ["2.2", "2.3", "2.4", "2.5"] },
+    { "id": 5, "tasks": ["2.6", "2.7", "2.8"] },
+    { "id": 6, "tasks": ["4.1", "5.1", "6.1", "7.1", "8.1"] },
+    { "id": 7, "tasks": ["4.2", "5.2", "6.2", "7.2", "8.2"] },
+    { "id": 8, "tasks": ["4.3", "5.3", "6.3", "7.3", "8.3"] },
+    { "id": 9, "tasks": ["4.4", "5.4", "6.4", "7.4", "8.4"] },
+    { "id": 10, "tasks": ["4.5", "5.5", "5.6", "6.5", "7.5", "7.6", "8.5", "8.6"] },
+    { "id": 11, "tasks": ["4.6", "5.7", "6.6", "7.7", "8.7"] },
+    { "id": 12, "tasks": ["4.7", "5.8", "6.7", "7.8", "8.8"] },
+    { "id": 13, "tasks": ["10.1"] },
+    { "id": 14, "tasks": ["10.2", "10.3", "10.4", "10.5"] },
+    { "id": 15, "tasks": ["10.6", "11.1", "11.2"] },
+    { "id": 16, "tasks": ["12.1", "12.2", "12.3"] },
+    { "id": 17, "tasks": ["12.4", "13.1", "13.2", "13.3", "13.4"] },
+    { "id": 18, "tasks": ["13.5", "14.1", "14.2"] },
+    { "id": 19, "tasks": ["14.3", "15.1", "15.2"] },
+    { "id": 20, "tasks": ["15.3", "16.1", "16.2", "16.3", "16.4", "16.5", "16.6", "16.7"] },
+    { "id": 21, "tasks": ["17.1", "17.2"] },
+    { "id": 22, "tasks": ["17.3", "18.1"] },
+    { "id": 23, "tasks": ["18.2", "18.3"] },
+    { "id": 24, "tasks": ["19.1", "19.2", "19.3", "19.4"] }
+  ]
+}
+```
