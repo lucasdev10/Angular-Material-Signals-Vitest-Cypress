@@ -58,7 +58,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
     - _Requirements: 7.11, 7.12_
 
 - [ ] 2. Set up Shell App (Host) infrastructure
-  - [ ] 2.1 Configure Shell App Module Federation as host
+  - [x] 2.1 Configure Shell App Module Federation as host
     - Install @angular-architects/module-federation package
     - Create webpack.config.js with ModuleFederationPlugin configuration
     - Configure Shell as host with all remote declarations (products, cart, admin, auth, user)
