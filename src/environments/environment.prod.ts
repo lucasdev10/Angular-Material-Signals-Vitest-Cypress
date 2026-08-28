@@ -4,10 +4,10 @@ export const environment = {
   enableDebugTools: false,
   logLevel: 'error',
   remotes: {
-    products: 'https://mfe-products.coffeeworkshop.com/remoteEntry.js',
-    cart: 'https://mfe-cart.coffeeworkshop.com/remoteEntry.js',
-    admin: 'https://mfe-admin.coffeeworkshop.com/remoteEntry.js',
-    auth: 'https://mfe-auth.coffeeworkshop.com/remoteEntry.js',
-    user: 'https://mfe-user.coffeeworkshop.com/remoteEntry.js',
+    products: 'https://cdn.coffeeworkshop.com/products/remoteEntry.js',
+    cart: 'https://cdn.coffeeworkshop.com/cart/remoteEntry.js',
+    admin: 'https://cdn.coffeeworkshop.com/admin/remoteEntry.js',
+    auth: 'https://cdn.coffeeworkshop.com/auth/remoteEntry.js',
+    user: 'https://cdn.coffeeworkshop.com/user/remoteEntry.js',
   },
 };

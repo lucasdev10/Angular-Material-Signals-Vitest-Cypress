@@ -1,4 +1,4 @@
-import { loadRemoteModule } from '@angular-architects/module-federation';
+﻿import { loadRemoteModule } from '@angular-architects/module-federation';
 import { Routes } from '@angular/router';
 import { environment } from '../environments/environment';
 import { authGuard } from './core/guards/auth.guard';
@@ -8,7 +8,7 @@ import { roleGuard } from './core/guards/role.guard';
  * Load remote module from MFE with environment-specific URL
  * @param remoteName - Name of the remote (e.g., 'products', 'cart')
  * @param exposedModule - Exported module path (e.g., './Routes')
- * @returns Promise resolving to the remote module
+ * @returns Promise resolving to the remote module routes
  */
 function loadRemoteMFE(remoteName: keyof typeof environment.remotes, exposedModule: string) {
   return () =>
@@ -16,9 +16,22 @@ function loadRemoteMFE(remoteName: keyof typeof environment.remotes, exposedModu
       type: 'module',
       remoteEntry: environment.remotes[remoteName],
       exposedModule,
-    }).then((m: { default?: Routes } | Routes) =>
-      typeof m === 'object' && 'default' in m ? m.default : m,
-    );
+    }).then((m: unknown) => {
+      // Handle different module export formats
+      if (
+        m &&
+        typeof m === 'object' &&
+        'default' in m &&
+        Array.isArray((m as Record<string, unknown>).default)
+      ) {
+        return (m as Record<string, unknown>).default as Routes;
+      }
+      if (Array.isArray(m)) {
+        return m as Routes;
+      }
+      // Fallback for Routes array directly
+      return m as Routes;
+    });
 }
 
 export const routes: Routes = [

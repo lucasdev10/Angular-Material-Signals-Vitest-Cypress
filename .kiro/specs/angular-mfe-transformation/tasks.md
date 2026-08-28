@@ -74,7 +74,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
     - Configure route for /user/\* loading User MFE with authGuard
     - Configure root redirect to /products and wildcard fallback
     - _Requirements: 1.6, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8_
-  - [ ] 2.3 Set up environment-specific remote URLs
+  - [x] 2.3 Set up environment-specific remote URLs
     - Create environment.ts with development remote URLs (localhost:4201-4205)
     - Create environment.prod.ts with production CDN URLs
     - Update routing to use environment-based remote URLs

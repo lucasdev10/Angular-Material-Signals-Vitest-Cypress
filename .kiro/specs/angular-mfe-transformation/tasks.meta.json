@@ -24,6 +24,18 @@
         "chatSessionId": "sess_e8766b5f-9da7-48a7-879c-2d693948f081",
         "timestamp": 1787934011773
       }
+    ],
+    "2.3 Set up environment-specific remote URLs": [
+      {
+        "executionId": "27cf0e5b-868c-4a6b-8115-cba984252345",
+        "chatSessionId": "sess_9bf2e9f9-deda-4c87-a3b9-096a8f30fea5",
+        "timestamp": 1787934188056
+      },
+      {
+        "executionId": "27cf0e5b-868c-4a6b-8115-cba984252345",
+        "chatSessionId": "sess_9bf2e9f9-deda-4c87-a3b9-096a8f30fea5",
+        "timestamp": 1787934323521
+      }
     ]
   }
 }
