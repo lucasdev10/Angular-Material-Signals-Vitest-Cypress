@@ -48,6 +48,18 @@
         "chatSessionId": "sess_603447b0-ebaf-4005-96ab-d0a517661f7b",
         "timestamp": 1787934841460
       }
+    ],
+    "2.5 Preserve Shell App core services, guards, and interceptors": [
+      {
+        "executionId": "bc1f02d3-42be-47ee-b7ff-7af2cf492328",
+        "chatSessionId": "sess_01c38caa-29d8-4917-b99e-35c8e37ebcbb",
+        "timestamp": 1787934923153
+      },
+      {
+        "executionId": "bc1f02d3-42be-47ee-b7ff-7af2cf492328",
+        "chatSessionId": "sess_01c38caa-29d8-4917-b99e-35c8e37ebcbb",
+        "timestamp": 1787935152833
+      }
     ]
   }
 }

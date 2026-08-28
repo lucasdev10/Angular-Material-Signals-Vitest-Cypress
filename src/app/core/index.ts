@@ -1,36 +1,29 @@
 /**
- * Barrel exports para Core
- * Facilita importações: import { authGuard, ApiService } from '@app/core';
+ * Barrel exports for Core Module
+ * Centralizes access to all core infrastructure: guards, interceptors, services, and utilities
+ * Enables imports: import { authGuard, ApiService, StorageService } from '@app/core';
  */
 
-// Guards
-export * from './guards/auth.guard';
-export * from './guards/role.guard';
-export * from './guards/unsaved-changes.guard';
+// Guards - Route protection for authentication, authorization, and state management
+export * from './guards';
 
-// Interceptors
-export * from './interceptors/auth.interceptor';
-export * from './interceptors/cache.interceptor';
-export * from './interceptors/error.interceptor';
-export * from './interceptors/loading.interceptor';
+// Interceptors - HTTP request/response handling for auth, errors, loading, and caching
+export * from './interceptors';
 
-// Handlers
+// Services - Core application services for UI state, logging, analytics, performance
+export * from './services';
+
+// Storage - Local storage abstraction service
+export * from './storage';
+
+// Handlers - Global error handling
 export * from './handlers/global-error.handler';
 
-// Services
-export * from '../shared/models/storage.model';
-export * from './data/mock-data.service';
-export * from './services/analytics.service';
-export * from './services/api.service';
-export * from './services/loading.service';
-export * from './services/logger.service';
-export * from './services/notification.service';
-export * from './services/performance.service';
-export * from './services/seo.service';
-export * from './services/theme.service';
-
-// Config
+// Config - Application constants
 export * from './config/app.constants';
 
-// Operators
+// Operators - Custom RxJS operators
 export * from './operators/retry-strategy.operator';
+
+// Models - Shared data models
+export * from '../shared/models/storage.model';

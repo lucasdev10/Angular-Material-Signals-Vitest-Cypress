@@ -87,7 +87,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
     - Configure store as singleton to be shared with MFEs
     - Implement store persistence to localStorage for auth and cart slices
     - _Requirements: 1.7, 10.1, 10.2, 10.3, 10.4, 10.10_
-  - [ ] 2.5 Preserve Shell App core services, guards, and interceptors
+  - [x] 2.5 Preserve Shell App core services, guards, and interceptors
     - Keep guards: authGuard, roleGuard, unsavedChangesGuard in core/guards
     - Keep interceptors: authInterceptor, errorInterceptor, loadingInterceptor, cacheInterceptor in core/interceptors
     - Keep services: LoadingService, NotificationService, ThemeService, LoggerService, StorageService
