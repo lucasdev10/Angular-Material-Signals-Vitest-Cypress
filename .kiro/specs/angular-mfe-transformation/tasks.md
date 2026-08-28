@@ -118,7 +118,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 4. Create Products MFE
-  - [ ] 4.1 Create coffee-products-mfe repository with Angular structure
+  - [x] 4.1 Create coffee-products-mfe repository with Angular structure
     - Initialize new Git repository
     - Create Angular application using Angular CLI
     - Install @angular-architects/module-federation
