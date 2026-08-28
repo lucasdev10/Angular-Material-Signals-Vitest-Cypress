@@ -125,7 +125,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
     - Configure package.json with scripts for port 4201
     - Add coffee-shared-lib as dependency
     - _Requirements: 2.1, 2.11, 12.2, 17.1_
-  - [ ] 4.2 Configure Products MFE Module Federation as remote
+  - [x] 4.2 Configure Products MFE Module Federation as remote
     - Create webpack.config.js with ModuleFederationPlugin as remote
     - Set name to "products" and filename to "remoteEntry.js"
     - Expose './Routes' pointing to products.routes.ts
