@@ -1,10 +1,11 @@
 /**
  * Barrel exports for Core Services
- * Services for loading state, notifications, theme, logging, and analytics
+ * Services for loading state, notifications, theme, logging, analytics, and inter-MFE communication
  */
 
 export * from './analytics.service';
 export * from './api.service';
+export * from './event-bus.service';
 export * from './loading.service';
 export * from './logger.service';
 export * from './notification.service';

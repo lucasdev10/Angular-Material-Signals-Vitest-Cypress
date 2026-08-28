@@ -57,7 +57,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
     - Publish to npm registry (private or public)
     - _Requirements: 7.11, 7.12_
 
-- [ ] 2. Set up Shell App (Host) infrastructure
+- [x] 2. Set up Shell App (Host) infrastructure
   - [x] 2.1 Configure Shell App Module Federation as host
     - Install @angular-architects/module-federation package
     - Create webpack.config.js with ModuleFederationPlugin configuration
@@ -100,7 +100,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
     - Create fallback component for MFE load failures
     - Implement error logging and user notifications
     - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6, 19.11, 19.12_
-  - [ ] 2.7 Implement Custom Event Bus Service for inter-MFE communication
+  - [x] 2.7 Implement Custom Event Bus Service for inter-MFE communication
     - Create EventBusService with emit and listen methods
     - Implement MFECustomEvent interface with type, detail, timestamp, source
     - Use window.dispatchEvent for global event propagation
