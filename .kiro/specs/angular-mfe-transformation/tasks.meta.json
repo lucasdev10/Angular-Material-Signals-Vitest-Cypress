@@ -74,6 +74,18 @@
         "chatSessionId": "sess_4f089d7f-8e7b-46c8-9c62-3bbfb423adc7",
         "timestamp": 1787936220387
       }
+    ],
+    "2.8 Migrate Shell App unit tests": [
+      {
+        "executionId": "71764847-66b0-45fd-a750-16bf7a4d10c2",
+        "chatSessionId": "sess_9e8daa1f-29a0-4e26-a714-f7760606db2b",
+        "timestamp": 1787938034231
+      },
+      {
+        "executionId": "71764847-66b0-45fd-a750-16bf7a4d10c2",
+        "chatSessionId": "sess_9e8daa1f-29a0-4e26-a714-f7760606db2b",
+        "timestamp": 1787938611206
+      }
     ]
   }
 }

@@ -107,7 +107,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
     - Use fromEvent + RxJS operators for reactive event listening
     - Document all custom events in README
     - _Requirements: 11.7, 11.8, 11.9_
-  - [ ]\* 2.8 Migrate Shell App unit tests
+  - [x] 2.8 Migrate Shell App unit tests
     - Keep and update all guard tests
     - Keep and update all interceptor tests
     - Keep and update all core service tests

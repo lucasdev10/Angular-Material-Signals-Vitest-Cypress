@@ -282,7 +282,7 @@ describe('EventBusService', () => {
         };
 
         service
-          .listen<CartItem>('cart:item-added')
+          .listen<CartItem & Record<string, unknown>>('cart:item-added')
           .pipe(take(1))
           .subscribe((event) => {
             expect(event.detail.quantity).toBe(2);
@@ -290,13 +290,17 @@ describe('EventBusService', () => {
             resolve();
           });
 
-        service.emit('cart:item-added', cartItem, 'cart-mfe');
+        service.emit<CartItem & Record<string, unknown>>(
+          'cart:item-added',
+          cartItem as any,
+          'cart-mfe',
+        );
       }));
 
     it('should handle events with null detail payload', () =>
       new Promise<void>((resolve) => {
         service
-          .listen<null>('cart:cleared')
+          .listen<null | Record<string, unknown>>('cart:cleared')
           .pipe(take(1))
           .subscribe((event) => {
             expect(event.detail).toBeNull();
@@ -304,7 +308,7 @@ describe('EventBusService', () => {
             resolve();
           });
 
-        service.emit('cart:cleared', null, 'cart-mfe');
+        service.emit<null | Record<string, unknown>>('cart:cleared', null as any, 'cart-mfe');
       }));
   });
 
@@ -322,7 +326,7 @@ describe('EventBusService', () => {
         };
 
         service
-          .listen<LoginEvent>('auth:login')
+          .listen<LoginEvent & Record<string, unknown>>('auth:login')
           .pipe(take(1))
           .subscribe((event) => {
             expect(event.source).toBe('auth-mfe');
@@ -330,7 +334,11 @@ describe('EventBusService', () => {
             resolve();
           });
 
-        service.emit('auth:login', loginData, 'auth-mfe');
+        service.emit<LoginEvent & Record<string, unknown>>(
+          'auth:login',
+          loginData as any,
+          'auth-mfe',
+        );
       }));
 
     it('should enable cart MFE to notify item addition', () =>
@@ -346,7 +354,7 @@ describe('EventBusService', () => {
         };
 
         service
-          .listen<CartItemAddedEvent>('cart:item-added')
+          .listen<CartItemAddedEvent & Record<string, unknown>>('cart:item-added')
           .pipe(take(1))
           .subscribe((event) => {
             expect(event.source).toBe('cart-mfe');
@@ -354,7 +362,11 @@ describe('EventBusService', () => {
             resolve();
           });
 
-        service.emit('cart:item-added', itemData, 'cart-mfe');
+        service.emit<CartItemAddedEvent & Record<string, unknown>>(
+          'cart:item-added',
+          itemData as any,
+          'cart-mfe',
+        );
       }));
 
     it('should enable user MFE to notify profile updates', () =>
@@ -372,7 +384,7 @@ describe('EventBusService', () => {
         };
 
         service
-          .listen<UserProfile>('user:profile-updated')
+          .listen<UserProfile & Record<string, unknown>>('user:profile-updated')
           .pipe(take(1))
           .subscribe((event) => {
             expect(event.source).toBe('user-mfe');
@@ -380,13 +392,17 @@ describe('EventBusService', () => {
             resolve();
           });
 
-        service.emit('user:profile-updated', profile, 'user-mfe');
+        service.emit<UserProfile & Record<string, unknown>>(
+          'user:profile-updated',
+          profile as any,
+          'user-mfe',
+        );
       }));
 
     it('should enable auth MFE to notify logout', () =>
       new Promise<void>((resolve) => {
         service
-          .listen<void>('auth:logout')
+          .listen<undefined | Record<string, unknown>>('auth:logout')
           .pipe(take(1))
           .subscribe((event) => {
             expect(event.source).toBe('auth-mfe');
@@ -394,7 +410,11 @@ describe('EventBusService', () => {
             resolve();
           });
 
-        service.emit('auth:logout', undefined, 'auth-mfe');
+        service.emit<undefined | Record<string, unknown>>(
+          'auth:logout',
+          undefined as any,
+          'auth-mfe',
+        );
       }));
 
     it('should propagate events across multiple listeners', () =>
@@ -453,15 +473,19 @@ describe('EventBusService', () => {
         const product: Product = { id: '1', name: 'Coffee', price: 12.99 };
 
         service
-          .listen<Product>('product:selected')
+          .listen<Product & Record<string, unknown>>('product:selected')
           .pipe(take(1))
-          .subscribe((event: MFECustomEvent<Product>) => {
+          .subscribe((event: MFECustomEvent<Product & Record<string, unknown>>) => {
             expect(event.detail.price).toBe(12.99);
             expect(event.detail.name).toBe('Coffee');
             resolve();
           });
 
-        service.emit('product:selected', product, 'products-mfe');
+        service.emit<Product & Record<string, unknown>>(
+          'product:selected',
+          product as any,
+          'products-mfe',
+        );
       }));
   });
 
@@ -488,7 +512,7 @@ describe('EventBusService', () => {
           .listen('test-event')
           .pipe(take(1))
           .subscribe((event) => {
-            expect(event.detail.data.length).toBe(1000);
+            expect((event.detail as any)['data']?.length).toBe(1000);
             resolve();
           });
 
@@ -499,14 +523,16 @@ describe('EventBusService', () => {
       new Promise<void>((resolve) => {
         const results: number[] = [];
 
-        const subscription = service.listen<{ id: number }>('rapid-event').subscribe((event) => {
-          results.push(event.detail.id);
-          if (results.length === 5) {
-            subscription.unsubscribe();
-            expect(results).toEqual([1, 2, 3, 4, 5]);
-            resolve();
-          }
-        });
+        const subscription = service
+          .listen<{ id: number } & Record<string, unknown>>('rapid-event')
+          .subscribe((event) => {
+            results.push((event.detail as any)['id']);
+            if (results.length === 5) {
+              subscription.unsubscribe();
+              expect(results).toEqual([1, 2, 3, 4, 5]);
+              resolve();
+            }
+          });
 
         for (let i = 1; i <= 5; i++) {
           service.emit('rapid-event', { id: i }, 'test-mfe');

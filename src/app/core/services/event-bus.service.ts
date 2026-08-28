@@ -6,7 +6,9 @@ import { map } from 'rxjs/operators';
  * Interface representing a custom event emitted between MFEs
  * @template T - The type of data contained in the event detail
  */
-export interface MFECustomEvent<T extends Record<string, unknown> = Record<string, unknown>> {
+export interface MFECustomEvent<
+  T extends Record<string, unknown> | null | undefined = Record<string, unknown>,
+> {
   /** Event type identifier (e.g., 'cart:item-added', 'auth:login') */
   type: string;
 
@@ -54,7 +56,11 @@ export class EventBusService {
    * @example
    * eventBus.emit('product:selected', { productId: '123', name: 'Coffee' }, 'products-mfe');
    */
-  emit<T extends Record<string, unknown>>(eventType: string, detail: T, source: string): void {
+  emit<T extends Record<string, unknown> | null | undefined>(
+    eventType: string,
+    detail: T,
+    source: string,
+  ): void {
     const mfeEvent: MFECustomEvent<T> = {
       type: eventType,
       detail,
@@ -89,7 +95,7 @@ export class EventBusService {
    *     console.log('Item added:', cartItem);
    *   });
    */
-  listen<T extends Record<string, unknown> = Record<string, unknown>>(
+  listen<T extends Record<string, unknown> | null | undefined = Record<string, unknown>>(
     eventType: string,
   ): Observable<MFECustomEvent<T>> {
     return fromEvent<CustomEvent<MFECustomEvent<T>>>(window, eventType).pipe(
