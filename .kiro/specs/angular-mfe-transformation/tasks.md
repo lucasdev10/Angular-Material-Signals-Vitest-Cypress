@@ -133,7 +133,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
     - Set publicPath to "auto" and uniqueName to "products"
     - Update angular.json to use custom webpack builder
     - _Requirements: 2.7, 2.8, 8.3, 8.4, 8.8_
-  - [ ] 4.3 Extract Products feature components and pages
+  - [x] 4.3 Extract Products feature components and pages
     - Move ProductCard component from monolith to MFE
     - Move ProductForm component from monolith to MFE
     - Move ProductListPage from monolith to MFE
