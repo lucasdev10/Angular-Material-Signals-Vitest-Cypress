@@ -114,7 +114,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
     - Ensure Header component tests work with NgRx store
     - _Requirements: 1.10, 15.3_
 
-- [ ] 3. Checkpoint - Verify Shell App foundation
+- [x] 3. Checkpoint - Verify Shell App foundation
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 4. Create Products MFE
