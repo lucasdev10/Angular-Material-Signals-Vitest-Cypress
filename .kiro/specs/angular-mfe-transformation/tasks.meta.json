@@ -36,6 +36,18 @@
         "chatSessionId": "sess_9bf2e9f9-deda-4c87-a3b9-096a8f30fea5",
         "timestamp": 1787934323521
       }
+    ],
+    "2.4 Configure Shell App NgRx global store": [
+      {
+        "executionId": "b9ce1c4d-18fe-4367-bf64-fa298079ded8",
+        "chatSessionId": "sess_603447b0-ebaf-4005-96ab-d0a517661f7b",
+        "timestamp": 1787934433846
+      },
+      {
+        "executionId": "b9ce1c4d-18fe-4367-bf64-fa298079ded8",
+        "chatSessionId": "sess_603447b0-ebaf-4005-96ab-d0a517661f7b",
+        "timestamp": 1787934841460
+      }
     ]
   }
 }

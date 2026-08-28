@@ -22,9 +22,9 @@ function loadRemoteMFE(remoteName: keyof typeof environment.remotes, exposedModu
         m &&
         typeof m === 'object' &&
         'default' in m &&
-        Array.isArray((m as Record<string, unknown>).default)
+        Array.isArray((m as Record<string, unknown>)['default'])
       ) {
-        return (m as Record<string, unknown>).default as Routes;
+        return (m as Record<string, unknown>)['default'] as Routes;
       }
       if (Array.isArray(m)) {
         return m as Routes;

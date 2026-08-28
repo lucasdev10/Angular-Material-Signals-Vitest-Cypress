@@ -47,7 +47,13 @@ export const appConfig: ApplicationConfig = {
       product: productReducer,
       cart: cartReducer,
       auth: authReducer,
+      // Global stores shared across MFEs via Module Federation
+      authGlobal: authGlobalReducer,
+      cartGlobal: cartGlobalReducer,
+      userGlobal: userGlobalReducer,
     }),
     provideEffects(UserEffects, ProductEffects, AuthEffects),
+    // Store persistence provider for localStorage sync
+    StorePersistenceProvider,
   ],
 };

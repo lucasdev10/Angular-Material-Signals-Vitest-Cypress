@@ -79,7 +79,7 @@ This plan transforms the monolithic CoffeeWorkshop Angular 21 application into a
     - Create environment.prod.ts with production CDN URLs
     - Update routing to use environment-based remote URLs
     - _Requirements: 8.7, 14.6, 14.7_
-  - [ ] 2.4 Configure Shell App NgRx global store
+  - [x] 2.4 Configure Shell App NgRx global store
     - Set up provideStore with auth, cart, and user slices
     - Create AuthState with token, user, isAuthenticated fields
     - Create CartState with items, total, count fields
